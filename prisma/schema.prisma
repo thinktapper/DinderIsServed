@@ -7,5 +7,92 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("RENDER_DB_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  username  String   @unique
+  password  String
+
+  herds           Herd[]  @relation(name: "herds")
+  shepHerds       Herd[]  @relation(name: "shepHerds")
+  organizedFeasts Feast[] @relation(name: "organizer")
+  votes           Vote[]
+}
+
+model Feast {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id])
+  organizerId String
+  herd        Herd   @relation(fields: [herdId], references: [id])
+  herdId      String
+
+  name     String
+  start    DateTime @default(now())
+  end      DateTime @default(now())
+  location Json
+  radius   Int
+  places   Place[]
+
+  closed   Boolean?
+  winner   Place?   @relation(name: "winner", fields: [winnerId], references: [id])
+  winnerId String?
+}
+
+model Herd {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name       String
+  shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id])
+  shepherdId String
+
+  members User[]  @relation(name: "herds")
+  feasts  Feast[]
+}
+
+model Place {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  feast   Feast  @relation(fields: [feastId], references: [id])
+  feastId String
+
+  googleId     String?
+  name         String?
+  description  String?
+  price        Float?
+  rating       String?
+  ratingsTotal String?
+  stars        String?
+  photos       Json?
+
+  votes     Vote[]
+  wonFeasts Feast[] @relation(name: "winner")
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id])
+  userId   String
+  place    Place            @relation(fields: [placeId], references: [id])
+  placeId  String
+  voteType EnumVoteVoteType
+}
+
+enum EnumVoteVoteType {
+  YASS
+  NAH
 }
