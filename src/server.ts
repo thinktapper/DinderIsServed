@@ -22,4 +22,14 @@ app.use('/api', protect, router)
 app.post('/user', signup)
 app.post('/login', login)
 
+app.use((err, req, res, next) => {
+  if (err.type === 'auth') {
+    res.json({ ok: false, message: 'Unauthorized' })
+  } else if (err.type === 'input') {
+    res.json({ ok: false, message: 'Invalid input' })
+  } else {
+    res.json({ ok: false, message: 'Something went wrong' })
+  }
+})
+
 export default app

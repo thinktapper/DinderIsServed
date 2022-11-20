@@ -1,27 +1,35 @@
 import { Router } from 'express'
 import { body, oneOf, validationResult } from 'express-validator'
+import {
+  createHerd,
+  deleteHerd,
+  getAllHerds,
+  getHerd,
+  getShepHerds,
+  updateHerd,
+} from './handlers/herd'
 import { handleInputErrors } from './modules/middleware'
 
 const router = Router()
 
 // HERD
-router.get('/herd', () => {})
-router.get('/herd/:id', () => {})
+router.get('/herd', getShepHerds)
+router.get('/herd/:id', getHerd)
 router.put(
   '/herd/:id',
   body('name').optional(),
   body('members').optional(),
   body('feasts').optional(),
   handleInputErrors,
-  () => {},
+  updateHerd,
 )
 router.post(
   '/herd',
   body('name').exists().isString(),
   handleInputErrors,
-  () => {},
+  createHerd,
 )
-router.delete('/herd/:id', () => {})
+router.delete('/herd/:id', deleteHerd)
 
 // FEAST
 router.get('/feast', (req, res) => {
@@ -63,5 +71,10 @@ router.get('/vote/:id', () => {})
 router.put('/vote/:id', () => {})
 router.post('/vote', () => {})
 router.delete('/vote/:id', () => {})
+
+router.use((err, req, res, next) => {
+  console.log(err)
+  res.json({ ok: false, message: 'Oops, DB error' })
+})
 
 export default router

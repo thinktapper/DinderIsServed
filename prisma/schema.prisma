@@ -45,6 +45,8 @@ model Feast {
   closed   Boolean @default(false)
   winner   Place?  @relation(name: "winner", fields: [winnerId], references: [id])
   winnerId String?
+
+  @@unique([id, organizerId])
 }
 
 model Herd {
@@ -58,6 +60,8 @@ model Herd {
 
   members User[]  @relation(name: "herds")
   feasts  Feast[]
+
+  @@unique([id, shepherdId])
 }
 
 model Place {
@@ -79,6 +83,8 @@ model Place {
 
   votes     Vote[]
   wonFeasts Feast[] @relation(name: "winner")
+
+  @@unique([id, feastId, googleId])
 }
 
 model Vote {
@@ -91,6 +97,8 @@ model Vote {
   place    Place    @relation(fields: [placeId], references: [id])
   placeId  String
   voteType VoteType
+
+  @@unique([id, userId, placeId])
 }
 
 enum VoteType {
