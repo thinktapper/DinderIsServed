@@ -34,15 +34,15 @@ model Feast {
   herd        Herd   @relation(fields: [herdId], references: [id])
   herdId      String
 
-  name     String
+  name     String   @db.VarChar(255)
   start    DateTime @default(now())
   end      DateTime @default(now())
   location Json
   radius   Int
   places   Place[]
 
-  closed   Boolean?
-  winner   Place?   @relation(name: "winner", fields: [winnerId], references: [id])
+  closed   Boolean @default(false)
+  winner   Place?  @relation(name: "winner", fields: [winnerId], references: [id])
   winnerId String?
 }
 
@@ -51,7 +51,7 @@ model Herd {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name       String
+  name       String @db.VarChar(255)
   shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id])
   shepherdId String
 
@@ -67,14 +67,14 @@ model Place {
   feast   Feast  @relation(fields: [feastId], references: [id])
   feastId String
 
-  googleId     String?
-  name         String?
+  googleId     String
+  name         String   @db.VarChar(255)
   description  String?
   price        Float?
   rating       String?
   ratingsTotal String?
   stars        String?
-  photos       Json?
+  photos       String[]
 
   votes     Vote[]
   wonFeasts Feast[] @relation(name: "winner")
@@ -85,14 +85,14 @@ model Vote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     User             @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
   userId   String
-  place    Place            @relation(fields: [placeId], references: [id])
+  place    Place    @relation(fields: [placeId], references: [id])
   placeId  String
-  voteType EnumVoteVoteType
+  voteType VoteType
 }
 
-enum EnumVoteVoteType {
+enum VoteType {
   YASS
   NAH
 }

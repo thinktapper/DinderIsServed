@@ -5,6 +5,10 @@
 ehthumbs.db
 Thumbs.db
 
+# IDE
+.idea
+.vscode
+
 # Logs
 logs
 *.log
