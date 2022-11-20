@@ -29,7 +29,7 @@ export const login = async (req, res) => {
   if (user) {
     const isValid = await comparePwds(req.body.password, user.password)
     if (isValid) {
-      res.json({ ok: true, token: createJWT(user) })
+      res.json({ ok: true, token: createJWT(user), username: user.username })
     } else {
       res.json({ ok: false, message: 'Nope' })
     }
