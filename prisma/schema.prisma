@@ -10,6 +10,13 @@ datasource db {
   url      = env("RENDER_DB_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+  SHEPHERD
+  ORGANIZER
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -17,12 +24,16 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
-  roles     Json?
+  roles     Role[]   @default([USER])
 
   herds           Herd[]  @relation(name: "herds")
   shepHerds       Herd[]  @relation(name: "shepHerds")
   organizedFeasts Feast[] @relation(name: "organizer")
   votes           Vote[]
+
+  @@unique([username, email])
+  @@index([username, email])
+  @@map(name: "users")
 }
 
 model Feast {
@@ -47,6 +58,7 @@ model Feast {
   winnerId String?
 
   @@unique([id, organizerId])
+  @@map(name: "feasts")
 }
 
 model Herd {
@@ -61,7 +73,7 @@ model Herd {
   members User[]  @relation(name: "herds")
   feasts  Feast[]
 
-  @@unique([id, shepherdId])
+  @@unique([shepherdId])
 }
 
 model Place {
@@ -84,7 +96,9 @@ model Place {
   votes     Vote[]
   wonFeasts Feast[] @relation(name: "winner")
 
-  @@unique([id, feastId, googleId])
+  @@unique([id])
+  @@index([feastId, googleId])
+  @@map(name: "places")
 }
 
 model Vote {
@@ -98,7 +112,8 @@ model Vote {
   placeId  String
   voteType VoteType
 
-  @@unique([id, userId, placeId])
+  @@unique([id])
+  @@map(name: "votes")
 }
 
 enum VoteType {
