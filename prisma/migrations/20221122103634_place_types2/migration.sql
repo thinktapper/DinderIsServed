@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "places" ALTER COLUMN "rating" SET DATA TYPE TEXT,
+ALTER COLUMN "ratingsTotal" SET DATA TYPE TEXT;

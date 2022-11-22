@@ -7,7 +7,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("RENDER_DB_URL")
+  // url      = env("RENDER_DB_URL")
+  url      = env("LOCAL_DB_URL")
 }
 
 enum Role {
@@ -41,7 +42,7 @@ model Feast {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id])
+  organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id], onDelete: Cascade)
   organizerId String
   herd        Herd   @relation(fields: [herdId], references: [id])
   herdId      String
@@ -68,7 +69,7 @@ model Herd {
   updatedAt DateTime @updatedAt
 
   name       String @db.VarChar(255)
-  shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id])
+  shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id], onDelete: Cascade)
   shepherdId String
 
   members User[]  @relation(name: "herds")
@@ -83,13 +84,13 @@ model Place {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  feast   Feast  @relation(fields: [feastId], references: [id])
+  feast   Feast  @relation(fields: [feastId], references: [id], onDelete: Cascade)
   feastId String
 
   googleId     String
   name         String   @db.VarChar(255)
   description  String?
-  price        Float?
+  price        String?
   rating       String?
   ratingsTotal String?
   stars        String?
@@ -108,9 +109,9 @@ model Vote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
-  place    Place    @relation(fields: [placeId], references: [id])
+  place    Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
   placeId  String
   voteType VoteType
 

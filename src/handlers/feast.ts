@@ -37,7 +37,7 @@ export const getOrganizedFeasts = async (req, res, next) => {
 }
 
 // Get one feast
-export const getfeast = async (req, res, next) => {
+export const getFeast = async (req, res, next) => {
   try {
     const { id } = req.body
     const feast = await prisma.feast.findFirst({
@@ -57,7 +57,7 @@ export const createFeast = async (req, res, next) => {
     const feast = await prisma.feast.create({
       data: {
         name: req.body.name,
-        organizerId: req.user.id,
+        organizerId: req.body.organizerId,
         herdId: req.body.herdId,
         start: req.body.start,
         end: req.body.end,

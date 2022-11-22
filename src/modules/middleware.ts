@@ -6,9 +6,9 @@ export const handleInputErrors = (
   res: Response,
   next: NextFunction,
 ) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    res.json({ ok: false, errors: errors.array() })
+  const errors = req.params.err
+  if (errors.length > 0) {
+    res.json({ ok: false, errors: errors })
   } else {
     next()
   }
