@@ -39,6 +39,7 @@ export const protect = (req, res, next) => {
     next()
     return
   } catch (err) {
+    err.type = 'auth'
     console.error(err)
     res.json({ ok: false, message: 'Not valid' })
     return

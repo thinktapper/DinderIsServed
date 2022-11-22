@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import router from './router'
 import morgan from 'morgan'
 import cors from 'cors'
@@ -8,21 +8,27 @@ import { login, signup } from './handlers/user'
 const app = express()
 
 app.use(cors())
-app.use(morgan('dev'))
+
+if (
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV === 'staging'
+) {
+  app.use(morgan('dev'))
+}
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
   console.log('Hello from the server!')
-  res.ok
-  res.json({ message: 'Hello World!' })
+  res.status(200).json({ message: 'Hello from the server!' })
 })
 
 app.use('/api', protect, router)
-app.post('/user', signup)
+app.post('/signup', signup)
 app.post('/login', login)
 
-app.use((err, req, res, next) => {
+app.use((err, req: Request, res: Response, next: NextFunction) => {
   if (err.type === 'auth') {
     res.json({ ok: false, message: 'Unauthorized' })
   } else if (err.type === 'input') {

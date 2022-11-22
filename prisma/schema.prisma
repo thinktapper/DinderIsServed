@@ -46,15 +46,16 @@ model Feast {
   herd        Herd   @relation(fields: [herdId], references: [id])
   herdId      String
 
-  name     String   @db.VarChar(255)
-  start    DateTime @default(now())
-  end      DateTime @default(now())
+  name     String  @db.VarChar(255)
+  start    String? @db.VarChar(255)
+  end      String? @db.VarChar(255)
+  // end      DateTime @default(now())
   location Json
   radius   Int
   places   Place[]
 
-  closed   Boolean @default(false)
-  winner   Place?  @relation(name: "winner", fields: [winnerId], references: [id])
+  closed   Boolean? @default(false)
+  winner   Place?   @relation(name: "winner", fields: [winnerId], references: [id])
   winnerId String?
 
   @@unique([id, organizerId])
@@ -73,7 +74,8 @@ model Herd {
   members User[]  @relation(name: "herds")
   feasts  Feast[]
 
-  @@unique([shepherdId])
+  @@unique([id, shepherdId])
+  @@index([id, name])
 }
 
 model Place {

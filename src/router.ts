@@ -1,62 +1,36 @@
-import { Router } from 'express'
-import { body, oneOf, validationResult } from 'express-validator'
+import { Router, NextFunction, Request, Response } from 'express'
+import {
+  createFeast,
+  deleteFeast,
+  getfeast,
+  getHerdFeasts,
+  updateFeast,
+} from './handlers/feast'
 import {
   createHerd,
   deleteHerd,
-  getAllHerds,
   getHerd,
   getShepHerds,
   updateHerd,
 } from './handlers/herd'
-import { handleInputErrors } from './modules/middleware'
 
 const router = Router()
 
 // HERD
 router.get('/herd', getShepHerds)
 router.get('/herd/:id', getHerd)
-router.put(
-  '/herd/:id',
-  body('name').optional(),
-  body('members').optional(),
-  body('feasts').optional(),
-  handleInputErrors,
-  updateHerd,
-)
-router.post(
-  '/herd',
-  body('name').exists().isString(),
-  handleInputErrors,
-  createHerd,
-)
+router.put('/herd/:id', () => {})
+router.patch('/herd/:id', updateHerd)
+router.post('/herd', createHerd)
 router.delete('/herd/:id', deleteHerd)
 
 // FEAST
-router.get('/feast', (req, res) => {
-  res.json({ message: 'Hungry?' })
-})
-router.get('/feast/:id', () => {})
-router.put(
-  '/feast/:id',
-  body('name').optional(),
-  body('location').optional(),
-  body('location.lat').optional(),
-  body('location.lng').optional(),
-  body('radius').optional(),
-  handleInputErrors,
-  () => {},
-)
-router.post(
-  '/feast',
-  body('name').exists().isString(),
-  body('location').exists().isJSON(),
-  body('location.lat').exists().isFloat(),
-  body('location.lng').exists().isFloat(),
-  body('radius').exists().isInt(),
-  handleInputErrors,
-  () => {},
-)
-router.delete('/feast/:id', () => {})
+router.get('/feast', getHerdFeasts)
+router.get('/feast/:id', getfeast)
+router.put('/feast/:id', () => {})
+router.patch('/feast/:id', updateFeast)
+router.post('/feast', createFeast)
+router.delete('/feast/:id', deleteFeast)
 
 // PLACE
 router.get('/place', () => {})
@@ -72,9 +46,9 @@ router.put('/vote/:id', () => {})
 router.post('/vote', () => {})
 router.delete('/vote/:id', () => {})
 
-router.use((err, req, res, next) => {
+router.use((err, req: Request, res: Response, next: NextFunction) => {
   console.log(err)
-  res.json({ ok: false, message: 'Oops, DB error' })
+  res.json({ ok: false, message: 'Shoot, DB error' })
 })
 
 export default router

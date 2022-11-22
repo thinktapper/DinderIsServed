@@ -3,12 +3,13 @@ import { comparePwds, hashPwd, createJWT } from '../modules/auth'
 
 export const signup = async (req, res, next) => {
   try {
-    const hashedPwd = await hashPwd(req.body.password)
+    const hashedPwd = hashPwd(req.body.password)
     const user = await prisma.user.create({
       data: {
         username: req.body.username,
         email: req.body.email,
         password: hashedPwd,
+        roles: req.body.roles,
       },
     })
 
@@ -27,7 +28,7 @@ export const login = async (req, res) => {
     },
   })
   if (user) {
-    const isValid = await comparePwds(req.body.password, user.password)
+    const isValid = comparePwds(req.body.password, user.password)
     if (isValid) {
       res.json({ ok: true, token: createJWT(user), username: user.username })
     } else {
