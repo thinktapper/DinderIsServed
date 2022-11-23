@@ -1,41 +1,66 @@
-import express, { NextFunction, Request, Response } from 'express'
-import router from './router'
-import morgan from 'morgan'
+import express from 'express'
+export const app = express()
 import cors from 'cors'
-import { protect } from './modules/auth'
-import { login, signup } from './handlers/user'
+import session from 'express-session'
+import { PrismaSessionStore } from '@quixo3/prisma-session-store'
+import passport from 'passport'
+import flash from 'connect-flash'
+import { morgan as logger } from 'morgan'
+import prisma from './db'
+import { PrismaClient } from '@prisma/client'
+import mainRoutes from './routes/main'
+import postRoutes from './routes/posts'
 
-const app = express()
+// Passport config
+require('./config/passport')(passport)
 
 app.use(cors())
 
+// Body parsing to allow nested objects. & set the responses to only be parsed as JSON
+app.use(express.urlencoded({ extended: true }), express.json())
+
+// Logging
 if (
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'staging'
 ) {
-  app.use(morgan('dev'))
+  app.use(logger('dev'))
 }
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(
+  session({
+    name: 'session',
+    secret: process.env.SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true },
+    store: new PrismaSessionStore(new PrismaClient(), {
+      checkPeriod: 2 * 60 * 1000, // 2 minutes
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  }),
+)
 
-app.get('/', (req, res) => {
-  console.log('Hello from the server!')
-  res.status(200).json({ message: 'Hello from the server!' })
-})
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
 
-app.use('/api', protect, router)
-app.post('/signup', signup)
-app.post('/login', login)
+// Use flash messages for errors, info, etc...
+app.use(flash())
 
-app.use((err, req: Request, res: Response, next: NextFunction) => {
-  if (err.type === 'auth') {
-    res.json({ ok: false, message: 'Unauthorized' })
-  } else if (err.type === 'input') {
-    res.json({ ok: false, message: 'Invalid input' })
-  } else {
-    res.json({ ok: false, message: 'Something went wrong' })
-  }
-})
+// Routes
+app.use('/', mainRoutes)
+app.use('/api', apiRoutes)
+
+// app.use((err, req: Request, res: Response, next: NextFunction) => {
+//   if (err.type === 'auth') {
+//     res.json({ ok: false, message: 'Unauthorized' })
+//   } else if (err.type === 'input') {
+//     res.json({ ok: false, message: 'Invalid input' })
+//   } else {
+//     res.json({ ok: false, message: 'Something went wrong' })
+//   }
+// })
 
 export default app

@@ -1,5 +1,18 @@
 import jwt from 'jsonwebtoken'
 import * as bcrypt from 'bcrypt'
+import passport from 'passport'
+
+passport.serializeUser((user, cb) => {
+  process.nextTick(() => {
+    return cb(null, { id: user.id, username: user.username, email: user.email })
+  })
+})
+
+passport.deserializeUser((user, cb) => {
+  process.nextTick(() => {
+    return cb(null, user)
+  })
+})
 
 const salt = bcrypt.genSaltSync(10)
 

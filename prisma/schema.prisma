@@ -11,11 +11,11 @@ datasource db {
   url      = env("LOCAL_DB_URL")
 }
 
-enum Role {
-  ADMIN
-  USER
-  SHEPHERD
-  ORGANIZER
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
 }
 
 model User {
@@ -25,58 +25,76 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
-  roles     Role[]   @default([USER])
 
-  herds           Herd[]  @relation(name: "herds")
-  shepHerds       Herd[]  @relation(name: "shepHerds")
-  organizedFeasts Feast[] @relation(name: "organizer")
-  votes           Vote[]
+  herds           HerdMembership[]
+  organizedFeasts Feast[]          @relation(name: "organizer")
+  votes           Vote[]           @relation(name: "votes")
 
-  @@unique([username, email])
-  @@index([username, email])
-  @@map(name: "users")
-}
-
-model Feast {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id], onDelete: Cascade)
-  organizerId String
-  herd        Herd   @relation(fields: [herdId], references: [id])
-  herdId      String
-
-  name     String  @db.VarChar(255)
-  start    String? @db.VarChar(255)
-  end      String? @db.VarChar(255)
-  // end      DateTime @default(now())
-  location Json
-  radius   Int
-  places   Place[]
-
-  closed   Boolean? @default(false)
-  winner   Place?   @relation(name: "winner", fields: [winnerId], references: [id])
-  winnerId String?
-
-  @@unique([id, organizerId])
-  @@map(name: "feasts")
+  // @@unique([username, email])
+  // @@index([username, email])
+  // @@map(name: "users")
+  invited HerdInvite[] @relation(name: "inviter")
 }
 
 model Herd {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
 
-  name       String @db.VarChar(255)
-  shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id], onDelete: Cascade)
-  shepherdId String
-
-  members User[]  @relation(name: "herds")
+  // shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id], onDelete: Cascade)
+  // shepherdId String
+  members HerdMembership[]
   feasts  Feast[]
+  invites HerdInvite[]
+}
 
-  @@unique([id, shepherdId])
-  @@index([id, name])
+model HerdMembership {
+  createdAt DateTime @default(now())
+  role      UserRole
+
+  herd   Herd   @relation(fields: [herdId], references: [id], onDelete: Cascade)
+  herdId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@id([herdId, userId])
+  @@index([userId, role])
+}
+
+model HerdInvite {
+  createdAt   DateTime @default(now())
+  inviteToken String?  @unique
+
+  inviter       User   @relation(name: "inviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  inviterId     String
+  invitedHerd   Herd   @relation(fields: [invitedHerdId], references: [id], onDelete: Cascade)
+  invitedHerdId String
+
+  inviteeEmail String?
+
+  @@id([inviterId, invitedHerdId])
+}
+
+model Feast {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
+  start     String?  @db.VarChar(255)
+  end       String?  @db.VarChar(255)
+  closed    Boolean? @default(false)
+  location  Json
+  radius    Int
+
+  herd        Herd   @relation(fields: [herdId], references: [id])
+  herdId      String
+  organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id])
+  organizerId String
+
+  places      Place[]
+  voteResults Vote[]
+  winner      String?
 }
 
 model Place {
@@ -84,39 +102,38 @@ model Place {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  feast   Feast  @relation(fields: [feastId], references: [id], onDelete: Cascade)
-  feastId String
-
   googleId     String
   name         String   @db.VarChar(255)
-  description  String?
+  description  String?  @db.VarChar(255)
   price        String?
   rating       String?
   ratingsTotal String?
   stars        String?
   photos       String[]
 
-  votes     Vote[]
-  wonFeasts Feast[] @relation(name: "winner")
-
-  @@unique([id])
-  @@index([feastId, googleId])
-  @@map(name: "places")
+  feast   Feast  @relation(fields: [feastId], references: [id], onDelete: Cascade)
+  feastId String
+  votes   Vote[]
 }
 
 model Vote {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  voteType  VoteType
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String
-  place    Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  placeId  String
-  voteType VoteType
+  user    User   @relation(name: "votes", fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String
+  feast   Feast  @relation(fields: [feastId], references: [id], onDelete: Cascade)
+  feastId String
+}
 
-  @@unique([id])
-  @@map(name: "votes")
+enum UserRole {
+  ADMIN
+  USER
+  SHEPHERD
+  ORGANIZER
 }
 
 enum VoteType {
