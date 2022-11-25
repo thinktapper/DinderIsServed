@@ -16,7 +16,6 @@ import { vote as voteRoutes } from './routes/vote'
 import { herd as herdRoutes } from './routes/herd'
 import { feast as feastRoutes } from './routes/feast'
 import { isAuth } from './middleware/isAuth'
-// import postRoutes from './routes/posts'
 
 // // Passport config
 // require('./config/passport')(passport)

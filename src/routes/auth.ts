@@ -59,7 +59,7 @@ auth.post('/login', async (req, res) => {
   })
 
   if (!user) {
-    return res.json({ success: false, error: 'User not found' })
+    return res.json({ success: false, error: 'Invalid credentials' })
   }
   const isValid = bcrypt.compareSync(password, user.password)
 
@@ -84,6 +84,45 @@ auth.post('/login', async (req, res) => {
   } else {
     return res.json({ success: false, error: 'Invalid password' })
   }
+})
+
+auth.get('/refresh', isAuth, async (req, res) => {
+  const { userID, sessionID } = req.params
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userID,
+    },
+  })
+
+  if (!user) {
+    return res.json({ success: false, error: 'User not found' })
+  }
+
+  if (user.sessionID !== sessionID) {
+    return res.json({
+      success: false,
+      error: 'Invalid session, try loging in.',
+    })
+  }
+
+  const newSessionID = await generateID(32)
+
+  await prisma.user.update({
+    where: {
+      id: userID,
+    },
+    data: {
+      sessionID: newSessionID,
+    },
+  })
+
+  const accessToken = jwt.sign(
+    { userID: user.id, sessionID: newSessionID },
+    process.env.SECRET,
+  )
+
+  return res.json({ success: true, accessToken: accessToken })
 })
 
 auth.post('/logout', isAuth, async (req, res) => {
