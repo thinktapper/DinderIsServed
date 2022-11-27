@@ -3,16 +3,31 @@ export const app = express()
 import cors from 'cors'
 import session from 'express-session'
 import { PrismaSessionStore } from '@quixo3/prisma-session-store'
-import passport from 'passport'
-import flash from 'connect-flash'
-import { morgan as logger } from 'morgan'
+// import passport from 'passport'
+// import flash from 'connect-flash'
+import morgan from 'morgan'
 import prisma from './db'
 import { PrismaClient } from '@prisma/client'
-import mainRoutes from './routes/main'
-import postRoutes from './routes/posts'
+// import mainRoutes from './routes/main'
+import { auth as authRoutes } from './routes/auth'
+import { user as userRoutes } from './routes/user'
+import { place as placeRoutes } from './routes/place'
+import { vote as voteRoutes } from './routes/vote'
+import { herd as herdRoutes } from './routes/herd'
+import { feast as feastRoutes } from './routes/feast'
+import { isAuth } from './middleware/isAuth'
+// import postRoutes from './routes/posts'
 
-// Passport config
-require('./config/passport')(passport)
+// // Passport config
+// require('./config/passport')(passport)
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: import('@prisma/client').User
+    }
+  }
+}
 
 app.use(cors())
 
@@ -24,34 +39,38 @@ if (
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'staging'
 ) {
-  app.use(logger('dev'))
+  app.use(morgan('dev'))
 }
 
-app.use(
-  session({
-    name: 'session',
-    secret: process.env.SECRET!,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: true },
-    store: new PrismaSessionStore(new PrismaClient(), {
-      checkPeriod: 2 * 60 * 1000, // 2 minutes
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
-    }),
-  }),
-)
+// app.use(
+//   session({
+//     name: 'session',
+//     secret: process.env.SECRET!,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: { secure: true },
+//     store: new PrismaSessionStore(prisma, {
+//       checkPeriod: 2 * 60 * 1000, // 2 minutes
+//       dbRecordIdIsSessionId: true,
+//       dbRecordIdFunction: undefined,
+//     }),
+//   }),
+// )
 
 // Passport middleware
-app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.initialize())
+// app.use(passport.session())
 
 // Use flash messages for errors, info, etc...
-app.use(flash())
+// app.use(flash())
 
 // Routes
-app.use('/', mainRoutes)
-app.use('/api', apiRoutes)
+app.use('/', authRoutes)
+app.use('/api/user', isAuth, userRoutes)
+app.use('/api/herd', isAuth, herdRoutes)
+app.use('/api/feast', isAuth, feastRoutes)
+app.use('/api/place', isAuth, placeRoutes)
+app.use('/api/vote', isAuth, voteRoutes)
 
 // app.use((err, req: Request, res: Response, next: NextFunction) => {
 //   if (err.type === 'auth') {

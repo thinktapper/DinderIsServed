@@ -57,12 +57,20 @@ export const createFeast = async (req, res, next) => {
     const feast = await prisma.feast.create({
       data: {
         name: req.body.name,
-        organizerId: req.body.organizerId,
-        herdId: req.body.herdId,
         start: req.body.start,
         end: req.body.end,
         location: req.body.location,
         radius: req.body.radius,
+        organizer: {
+          connect: {
+            id: req.user.id,
+          },
+        },
+        herd: {
+          connect: {
+            id: req.body.herdId,
+          },
+        },
       },
     })
     res.json({ ok: true, data: feast })
@@ -77,10 +85,7 @@ export const updateFeast = async (req, res, next) => {
   try {
     const updated = await prisma.feast.update({
       where: {
-        id_organizerId: {
-          id: req.params.id,
-          organizerId: req.user.id,
-        },
+        id: req.params.id,
       },
       data: req.body,
     })
@@ -95,10 +100,7 @@ export const deleteFeast = async (req, res, next) => {
   try {
     const deleted = await prisma.feast.delete({
       where: {
-        id_organizerId: {
-          id: req.params.id,
-          organizerId: req.user.id,
-        },
+        id: req.params.id,
       },
     })
     res.json({ ok: true, data: deleted })

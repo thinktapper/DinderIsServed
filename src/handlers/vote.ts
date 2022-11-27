@@ -58,8 +58,21 @@ export const createVote = async (req, res, next) => {
   try {
     const vote = await prisma.vote.create({
       data: {
-        userId: req.user.id,
-        placeId: req.body.placeId,
+        user: {
+          connect: {
+            id: req.user.id,
+          },
+        },
+        place: {
+          connect: {
+            id: req.body.placeId,
+          },
+        },
+        feast: {
+          connect: {
+            id: req.body.feastId,
+          },
+        },
         voteType: req.body.voteType,
       },
     })

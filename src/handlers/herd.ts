@@ -21,12 +21,10 @@ export const getAllHerds = async (req, res, next) => {
 // Get created herds
 export const getShepHerds = async (req, res, next) => {
   try {
-    const shepherds = await prisma.user.findUnique({
+    const shepherds = await prisma.herdMembership.findMany({
       where: {
-        id: req.user.id,
-      },
-      include: {
-        shepHerds: true,
+        userId: req.user.id,
+        role: 'SHEPHERD',
       },
     })
 
@@ -43,11 +41,6 @@ export const getHerd = async (req, res, next) => {
     const herd = await prisma.herd.findFirst({
       where: {
         id,
-        members: {
-          some: {
-            id: req.user.id,
-          },
-        },
       },
     })
     res.json({ ok: true, data: herd })
@@ -62,7 +55,16 @@ export const createHerd = async (req, res, next) => {
     const herd = await prisma.herd.create({
       data: {
         name: req.body.name,
-        shepherdId: req.user.id,
+        members: {
+          create: {
+            role: 'SHEPHERD',
+            user: {
+              connect: {
+                id: req.user.id,
+              },
+            },
+          },
+        },
       },
     })
     res.json({ ok: true, data: herd })
@@ -76,10 +78,7 @@ export const updateHerd = async (req, res, next) => {
   try {
     const updated = await prisma.herd.update({
       where: {
-        id_shepherdId: {
-          id: req.params.id,
-          shepherdId: req.user.id,
-        },
+        id: req.params.id,
       },
       data: req.body,
     })
@@ -94,10 +93,7 @@ export const deleteHerd = async (req, res, next) => {
   try {
     const deleted = await prisma.herd.delete({
       where: {
-        id_shepherdId: {
-          id: req.params.id,
-          shepherdId: req.user.id,
-        },
+        id: req.params.id,
       },
     })
     res.json({ ok: true, data: deleted })
