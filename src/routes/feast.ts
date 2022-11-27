@@ -7,6 +7,8 @@ import {
   getHerdFeasts,
   updateFeast,
 } from '../handlers/feast'
+import { fetchPlaces } from '../modules/fetchPlaces'
+import { createPlace } from '../handlers/place'
 
 export const feast = Router()
 

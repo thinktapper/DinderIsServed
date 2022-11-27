@@ -78,24 +78,27 @@ model HerdInvite {
 }
 
 model Feast {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  start     String?  @db.VarChar(255)
-  end       String?  @db.VarChar(255)
-  closed    Boolean? @default(false)
-  location  Json
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @db.VarChar(255)
+  // start     String?  @db.VarChar(255)
+  // end       String?  @db.VarChar(255)
+  startDate DateTime? @default(now()) @db.Date
+  endDate   DateTime? @db.Date
+  closed    Boolean?  @default(false)
+  location  Json      @db.Json
   radius    Int
 
-  herd        Herd   @relation(fields: [herdId], references: [id])
+  herd        Herd   @relation(fields: [herdId], references: [id], onDelete: Cascade)
   herdId      String
   organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id])
   organizerId String
 
   places      Place[]
   voteResults Vote[]
-  winner      String?
+  winner      Place?  @relation(name: "wonFeasts", fields: [winnerId], references: [googleId])
+  winnerId    String?
 }
 
 model Place {
@@ -103,18 +106,21 @@ model Place {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  googleId     String
+  googleId     String   @unique
   name         String   @db.VarChar(255)
-  description  String?  @db.VarChar(255)
-  price        String?
-  rating       String?
-  ratingsTotal String?
-  stars        String?
+  description  String?  @db.Text
+  price        String?  @db.VarChar(255)
+  rating       String?  @db.VarChar(255)
+  ratingsTotal String?  @db.VarChar(255)
+  stars        String?  @db.VarChar(255)
   photos       String[]
 
-  feast   Feast  @relation(fields: [feastId], references: [id], onDelete: Cascade)
-  feastId String
-  votes   Vote[]
+  feast     Feast   @relation(fields: [feastId], references: [id], onDelete: Cascade)
+  feastId   String
+  votes     Vote[]
+  wonFeasts Feast[] @relation(name: "wonFeasts")
+
+  @@unique([feastId, googleId])
 }
 
 model Vote {
@@ -133,6 +139,7 @@ model Vote {
 enum UserRole {
   ADMIN
   USER
+  MEMBER
   SHEPHERD
   ORGANIZER
 }

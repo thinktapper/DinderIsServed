@@ -25,6 +25,7 @@ const defaultConfig = {
     jwt: process.env.JWT_SECRET,
     dbUrl: process.env.DATABASE_URL,
     RENDER_DB_URL: process.env.RENDER_DB_URL,
+    GOOGLE_API: process.env.GOOGLE_API,
   },
   logging: false,
 }

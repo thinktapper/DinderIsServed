@@ -1,4 +1,7 @@
+import { Prisma } from '@prisma/client'
+import { request } from 'express'
 import prisma from '../db'
+import { fetchPlaces } from '../modules/fetchPlaces'
 
 // Get all feasts
 export const getHerdFeasts = async (req, res, next) => {
@@ -53,12 +56,19 @@ export const getFeast = async (req, res, next) => {
 
 // Create a feast
 export const createFeast = async (req, res, next) => {
-  try {
-    const feast = await prisma.feast.create({
+  // try {
+  type Feast = {
+    id: string
+    name: string
+    location: JSON
+    radius: number
+  }
+  const feast = await prisma.feast
+    .create({
       data: {
         name: req.body.name,
-        start: req.body.start,
-        end: req.body.end,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
         location: req.body.location,
         radius: req.body.radius,
         organizer: {
@@ -73,11 +83,27 @@ export const createFeast = async (req, res, next) => {
         },
       },
     })
-    res.json({ ok: true, data: feast })
-  } catch (err) {
-    console.log(err)
-    next(err)
-  }
+    .then(async (feast) => {
+      const fetchedPlaces = await fetchPlaces({ feast })
+      // const places = await prisma.place.createMany({
+      //   data: fetchedPlaces,
+      //   skipDuplicates: true,
+      // })
+      res.json({ ok: true, data: { feast, places: fetchedPlaces } })
+    })
+    .catch((err) => {
+      next(err)
+    })
+  // await fetchPlaces(feast)
+  // Create places for the feast
+  // const fetchedPlaces = next(fetchPlaces({ feast }))
+  // res.json({ ok: true, data: feast, fetchedPlaces })
+
+  // next(feast)
+  // } catch (err) {
+  //   console.log(err)
+  //   next(err)
+  // }
 }
 
 // Update a feast
