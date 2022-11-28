@@ -1,12 +1,27 @@
 import { PrismaClient } from '@prisma/client'
-import type { User } from '@prisma/client'
 import { add } from 'date-fns'
+const schema = require('../../prisma/schema.prisma')
+
+// Create a seed script that will populate the database with some data for testing
+// 1. Create a new file in the root directory called seed.ts
+// 2. Import PrismaClient from @prisma/client
+// 3. Import schema from the prisma/schema.prisma file
+// 4. Instantiate PrismaClient and call it prisma
+// 5. Create a main function that will be called at the end of the file
+// 6. Call prisma.herd.deleteMany() to delete all herds
+// 7. Call prisma.user.deleteMany() to delete all users
+// 8. Create a user named Grace Hopper and
+
+// https://www.prisma.io/docs/guides/database/seed-database
+// https://www.prisma.io/docs/guides/database/seed-database#how-to-use-the-seed-script
 
 // Instantiate Prisma Client
 const prisma = new PrismaClient()
+import type { Place, Vote } from '@prisma/client'
 
 // A `main` function so that we can use async/await
 async function main() {
+  // Delete all existing data
   await prisma.session.deleteMany({})
   await prisma.vote.deleteMany({})
   await prisma.herdMembership.deleteMany({})
@@ -14,40 +29,22 @@ async function main() {
   await prisma.user.deleteMany({})
   await prisma.herd.deleteMany({})
 
+  // Create users
   const grace = await prisma.user.create({
     data: {
       email: 'grace@hey.com',
       username: 'grace',
+      password: 'password',
     },
   })
 
-  const weekFromNow = add(new Date(), { days: 7 })
-  const twoWeekFromNow = add(new Date(), { days: 14 })
-  const monthFromNow = add(new Date(), { days: 28 })
-
+  // Create herds
   const course = await prisma.herd.create({
     data: {
       name: 'CRUD with Prisma',
-      feasts: {
-        create: [
-          {
-            startDate: new Date(),
-            endDate: weekFromNow,
-            name: 'First feast',
-          },
-          {
-            endDate: twoWeekFromNow,
-            name: 'Second test',
-          },
-          {
-            endDate: monthFromNow,
-            name: 'Final exam',
-          },
-        ],
-      },
       members: {
         create: {
-          role: 'ORGANIZER',
+          role: 'SHEPHERD',
           user: {
             connect: {
               email: grace.email,
@@ -57,22 +54,26 @@ async function main() {
       },
     },
     include: {
-      feasts: true,
+      members: true,
     },
   })
 
-  const shakuntala = await prisma.user.create({
+  const meetup = await prisma.herd.create({
     data: {
-      email: 'devi@prisma.io',
-      username: 'Shakuntala',
-      herds: {
+      name: 'Prisma Meetup',
+      members: {
         create: {
-          role: 'MEMBER',
-          herd: {
-            connect: { id: herd.id },
+          role: 'SHEPHERD',
+          user: {
+            connect: {
+              email: grace.email,
+            },
           },
         },
       },
+    },
+    include: {
+      members: true,
     },
   })
 
@@ -80,26 +81,51 @@ async function main() {
     data: {
       email: 'david@prisma.io',
       username: 'Deutsch',
+      password: 'password123',
       herds: {
         create: {
           role: 'MEMBER',
           herd: {
-            connect: { id: herd.id },
+            connect: { id: course.id },
           },
         },
       },
     },
   })
 
-  const place1 = await prisma.place.create({
+  const shakuntala = await prisma.user.create({
     data: {
-      name: 'Interesting course. Looking forward to learning more',
-      feast: {
-        connect: {
-          id: feast.id,
+      email: 'devi@prisma.io',
+      username: 'Shakuntala',
+      password: 'password1',
+      herds: {
+        create: {
+          role: 'MEMBER',
+          herd: {
+            connect: { id: meetup.id },
+          },
         },
       },
-      user: {
+    },
+  })
+  // Create feasts
+  const weekFromNow = add(new Date(), { days: 7 })
+  const twoWeekFromNow = add(new Date(), { days: 14 })
+  const monthFromNow = add(new Date(), { days: 28 })
+
+  const firstFeast = await prisma.feast.create({
+    data: {
+      location: { lat: 44.234, long: -93.2355 },
+      radius: 3,
+      startDate: new Date(),
+      endDate: weekFromNow,
+      name: 'First feast',
+      herd: {
+        connect: {
+          id: course.id,
+        },
+      },
+      organizer: {
         connect: {
           id: david.id,
         },
@@ -107,90 +133,114 @@ async function main() {
     },
   })
 
-  const testResultsDavid = [650, 900, 950]
-  const testResultsShakuntala = [800, 950, 910]
-
-  let counter = 0
-  for (const test of course.tests) {
-    await prisma.testResult.create({
-      data: {
-        gradedBy: {
-          connect: { email: grace.email },
+  const secondFeast = await prisma.feast.create({
+    data: {
+      location: { lat: 44.234, long: -93.2355 },
+      radius: 3,
+      startDate: weekFromNow,
+      endDate: twoWeekFromNow,
+      name: 'Second test',
+      herd: {
+        connect: {
+          id: course.id,
         },
-        student: {
-          connect: { email: shakuntala.email },
-        },
-        test: {
-          connect: { id: test.id },
-        },
-        result: testResultsShakuntala[counter],
       },
-    })
-
-    await prisma.testResult.create({
-      data: {
-        gradedBy: {
-          connect: { email: grace.email },
+      organizer: {
+        connect: {
+          id: shakuntala.id,
         },
-        student: {
-          connect: { email: david.email },
-        },
-        test: {
-          connect: { id: test.id },
-        },
-        result: testResultsDavid[counter],
       },
-    })
+    },
+  })
 
-    // Get aggregates for each test
-    const results = await prisma.testResult.aggregate({
-      where: {
-        testId: test.id,
+  const finalExam = await prisma.feast.create({
+    data: {
+      location: { lat: 44.234, long: -93.2355 },
+      radius: 3,
+      startDate: new Date(),
+      endDate: monthFromNow,
+      name: 'Final exam',
+      herd: {
+        connect: {
+          id: meetup.id,
+        },
       },
-      avg: { result: true },
-      max: { result: true },
-      min: { result: true },
-      count: true,
-    })
-    console.log(`test: ${test.name} (id: ${test.id})`, results)
+      organizer: {
+        connect: {
+          id: grace.id,
+        },
+      },
+    },
+  })
 
-    counter++
+  const meetupFeast = await prisma.feast.create({
+    data: {
+      location: { lat: 44.234, long: -93.2355 },
+      radius: 3,
+      startDate: new Date(),
+      endDate: monthFromNow,
+      name: 'Prisma Meetup',
+      herd: {
+        connect: {
+          id: meetup.id,
+        },
+      },
+      organizer: {
+        connect: {
+          id: grace.id,
+        },
+      },
+    },
+  })
+
+  // For each feast, create 10 places of type Place and 10 corresponding votes of type Vote
+  const feasts = [firstFeast, secondFeast, finalExam, meetupFeast]
+  const users = [grace, david, shakuntala]
+  for (const feast of feasts) {
+    for (let i = 0; i < 10; i++) {
+      const place = await prisma.place.create({
+        data: {
+          name: `Place ${i}`,
+          googleId: `googleId ${i}`,
+          photos: [`photo ${i}`],
+          feast: {
+            connect: {
+              id: feast.id,
+            },
+          },
+        },
+      })
+
+      // Create votes
+      await prisma.vote.create({
+        data: {
+          voteType: 'YASS',
+          place: {
+            connect: {
+              id: place.id,
+            },
+          },
+          user: {
+            connect: {
+              id: users[i].id,
+            },
+          },
+          feast: {
+            connect: {
+              id: feast.id,
+            },
+          },
+        },
+      })
+    }
   }
-
-  // Get aggregates for David
-  const davidAggregates = await prisma.testResult.aggregate({
-    where: {
-      student: { email: david.email },
-    },
-    avg: { result: true },
-    max: { result: true },
-    min: { result: true },
-    count: true,
-  })
-  console.log(`David's results (email: ${david.email})`, davidAggregates)
-
-  // Get aggregates for Shakuntala
-  const shakuntalaAggregates = await prisma.testResult.aggregate({
-    where: {
-      student: { email: shakuntala.email },
-    },
-    avg: { result: true },
-    max: { result: true },
-    min: { result: true },
-    count: true,
-  })
-  console.log(
-    `Shakuntala's results (email: ${shakuntala.email})`,
-    shakuntalaAggregates,
-  )
 }
 
 main()
-  .catch((e: Error) => {
+  .catch((e) => {
     console.error(e)
     process.exit(1)
   })
   .finally(async () => {
-    // Disconnect Prisma Client
     await prisma.$disconnect()
   })
