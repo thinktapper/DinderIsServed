@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Feast" ALTER COLUMN "herdId" DROP NOT NULL;

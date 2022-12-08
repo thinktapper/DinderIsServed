@@ -1,4 +1,5 @@
 import prisma from '../db'
+import { User } from '@prisma/client'
 import { isAuth } from '../middleware/isAuth'
 import { generateID } from '../modules/generateID'
 import { Router } from 'express'
@@ -9,37 +10,53 @@ export const auth = Router()
 
 const salt = bcrypt.genSaltSync(10)
 
+type CleanUser = Omit<User, 'password'>
+
+function removePasswordAddToken(user: User): CleanUser & { token: string } {
+  const { password, ...cleanUser } = user
+
+  // create token
+  const token = jwt.sign(cleanUser, process.env.SECRET)
+
+  // return user with token
+  return { ...cleanUser, token }
+}
+
 auth.post('/signup', async (req, res) => {
-  const { email, password, username } = req.body
+  try {
+    const { email, password, username } = req.body
 
-  if (!email || !password || !username) {
-    return res.json({
-      success: false,
-      error: 'Missing request body properties',
+    if (!email || !password || !username) {
+      return res.json({
+        success: false,
+        error: 'Missing request body properties',
+      })
+    }
+
+    const result = await prisma.user.findFirst({
+      where: {
+        username,
+      },
     })
+
+    if (result)
+      return res.json({ success: false, error: 'User already exists' })
+
+    const hashedPassword = bcrypt.hashSync(password, salt)
+
+    const newUser = await prisma.user.create({
+      data: {
+        email: email,
+        username: username,
+        password: hashedPassword,
+      },
+    })
+
+    const user = removePasswordAddToken(newUser)
+    return res.status(201).json({ success: true, user })
+  } catch (err) {
+    return res.status(500).json({ message: `could not add user: ${err}` })
   }
-
-  const result = await prisma.user.findFirst({
-    where: {
-      username,
-    },
-  })
-
-  if (result) return res.json({ success: false, error: 'User already exists' })
-
-  const hashedPassword = bcrypt.hashSync(password, salt)
-
-  const user = await prisma.user.create({
-    data: {
-      email: email,
-      password: hashedPassword,
-      username: username,
-    },
-  })
-
-  const accessToken = jwt.sign({ userID: user.id }, process.env.SECRET)
-
-  return res.json({ success: true, accessToken: accessToken })
 })
 
 auth.post('/login', async (req, res) => {
@@ -52,35 +69,37 @@ auth.post('/login', async (req, res) => {
     })
   }
 
-  const user = await prisma.user.findFirst({
+  const oldUser = await prisma.user.findFirst({
     where: {
       username,
     },
   })
 
-  if (!user) {
+  if (!oldUser) {
     return res.json({ success: false, error: 'Invalid credentials' })
   }
-  const isValid = bcrypt.compareSync(password, user.password)
+  const isValid = bcrypt.compareSync(password, oldUser.password)
 
   if (isValid) {
     const sessionID = await generateID(32)
 
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: {
-        id: user.id,
+        id: oldUser.id,
       },
       data: {
         sessionID: sessionID,
       },
     })
 
-    const accessToken = jwt.sign(
-      { userID: user.id, sessionID },
-      process.env.SECRET,
-    )
+    // const accessToken = jwt.sign(
+    //   { userID: user.id, sessionID },
+    //   process.env.SECRET,
+    // )
 
-    return res.json({ success: true, accessToken: accessToken })
+    // return res.json({ success: true, accessToken })
+    const user = removePasswordAddToken(updatedUser)
+    return res.status(200).json({ success: true, user })
   } else {
     return res.json({ success: false, error: 'Invalid password' })
   }
@@ -89,17 +108,17 @@ auth.post('/login', async (req, res) => {
 auth.get('/refresh', isAuth, async (req, res) => {
   const { userID, sessionID } = req.params
 
-  const user = await prisma.user.findFirst({
+  const oldUser = await prisma.user.findFirst({
     where: {
       id: userID,
     },
   })
 
-  if (!user) {
+  if (!oldUser) {
     return res.json({ success: false, error: 'User not found' })
   }
 
-  if (user.sessionID !== sessionID) {
+  if (oldUser.sessionID !== sessionID) {
     return res.json({
       success: false,
       error: 'Invalid session, try loging in.',
@@ -108,7 +127,7 @@ auth.get('/refresh', isAuth, async (req, res) => {
 
   const newSessionID = await generateID(32)
 
-  await prisma.user.update({
+  const refreshedUser = await prisma.user.update({
     where: {
       id: userID,
     },
@@ -117,12 +136,14 @@ auth.get('/refresh', isAuth, async (req, res) => {
     },
   })
 
-  const accessToken = jwt.sign(
-    { userID: user.id, sessionID: newSessionID },
-    process.env.SECRET,
-  )
+  // const accessToken = jwt.sign(
+  //   { userID: user.id, sessionID: newSessionID },
+  //   process.env.SECRET,
+  // )
 
-  return res.json({ success: true, accessToken: accessToken })
+  // return res.json({ success: true, accessToken: accessToken })
+  const user = removePasswordAddToken(refreshedUser)
+  return res.status(200).json({ success: true, user })
 })
 
 auth.post('/logout', isAuth, async (req, res) => {
