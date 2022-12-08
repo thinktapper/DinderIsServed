@@ -29,20 +29,21 @@ export const isAuth = async (
 
   try {
     tokenBody = jwt.verify(accessToken, process.env.SECRET)
-  } catch {
+    // console.log('tokenBody: ', tokenBody)
+  } catch (err) {
     return res.json({
       success: false,
       error: 'invalid token',
     })
   }
 
-  if (!tokenBody.userID) {
+  if (!tokenBody.id) {
     return res.json({ success: false, error: 'invalid token' })
   }
 
   const user = await prisma.user.findUnique({
     where: {
-      id: tokenBody.userID,
+      id: tokenBody.id,
     },
   })
 

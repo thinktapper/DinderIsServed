@@ -97,7 +97,7 @@ model Feast {
 
   places      Place[]
   voteResults Vote[]
-  winner      Place?  @relation(name: "wonFeasts", fields: [winnerId], references: [googleId])
+  winner      Place?  @relation(name: "wonFeasts", fields: [winnerId], references: [id])
   winnerId    String?
 }
 
@@ -106,7 +106,7 @@ model Place {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  googleId     String   @unique
+  googleId     String
   name         String   @db.VarChar(255)
   description  String?  @db.Text
   price        String?  @db.VarChar(255)
@@ -120,7 +120,7 @@ model Place {
   votes     Vote[]
   wonFeasts Feast[] @relation(name: "wonFeasts")
 
-  @@unique([feastId, googleId])
+  // @@unique([feastId, googleId])
 }
 
 model Vote {

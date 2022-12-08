@@ -12,7 +12,9 @@ const salt = bcrypt.genSaltSync(10)
 
 type CleanUser = Omit<User, 'password'>
 
-function removePasswordAddToken(user: User): CleanUser & { token: string } {
+export function removePasswordAddToken(
+  user: User,
+): CleanUser & { token: string } {
   const { password, ...cleanUser } = user
 
   // create token

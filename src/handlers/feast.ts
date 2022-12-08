@@ -47,8 +47,11 @@ export const getFeast = async (req, res, next) => {
       where: {
         id: id,
       },
+      include: {
+        places: true,
+      },
     })
-    res.json({ ok: true, data: feast })
+    res.status(200).json({ success: true, feast, places: feast.places })
   } catch (err) {
     next(err)
   }
@@ -63,6 +66,7 @@ export const createFeast = async (req, res, next) => {
     location: JSON
     radius: number
   }
+  let fetchedPlaces = []
   const feast = await prisma.feast
     .create({
       data: {
@@ -76,20 +80,22 @@ export const createFeast = async (req, res, next) => {
             id: req.user.id,
           },
         },
-        herd: {
-          connect: {
-            id: req.body.herdId,
-          },
-        },
+        // herd: {
+        //   connect: {
+        //     id: req.body.herdId,
+        //   },
+        // },
+        herd: req.body.herdId ? { connect: { id: req.body.herdId } } : {},
       },
     })
     .then(async (feast) => {
-      const fetchedPlaces = await fetchPlaces({ feast })
+      fetchedPlaces = await fetchPlaces({ feast })
       // const places = await prisma.place.createMany({
       //   data: fetchedPlaces,
       //   skipDuplicates: true,
       // })
-      res.json({ ok: true, data: { feast, places: fetchedPlaces } })
+      // res.json({ ok: true, data: { feast, places: fetchedPlaces } })
+      res.status(201).json({ success: true, feast })
     })
     .catch((err) => {
       next(err)
