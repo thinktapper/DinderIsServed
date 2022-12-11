@@ -16,6 +16,7 @@ import { vote as voteRoutes } from './routes/vote'
 import { herd as herdRoutes } from './routes/herd'
 import { feast as feastRoutes } from './routes/feast'
 import { isAuth } from './middleware/isAuth'
+import AppError from './modules/appError'
 
 // // Passport config
 // require('./config/passport')(passport)
@@ -28,10 +29,11 @@ declare global {
   }
 }
 
-app.use(cors())
+app.use(cors({ credentials: true }))
 
 // Body parsing to allow nested objects. & set the responses to only be parsed as JSON
-app.use(express.urlencoded({ extended: true }), express.json())
+// app.use(express.urlencoded({ extended: true }), express.json())
+app.use(express.json())
 
 // Logging
 if (
@@ -70,6 +72,22 @@ app.use('/api/herd', isAuth, herdRoutes)
 app.use('/api/feast', isAuth, feastRoutes)
 app.use('/api/place', isAuth, placeRoutes)
 app.use('/api/vote', isAuth, voteRoutes)
+
+// UNHANDLED ROUTES
+app.all('*', (req, res, next) => {
+  next(new AppError(404, `Route ${req.originalUrl} not found`))
+})
+
+// GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  err.status = err.status || 'error'
+  err.statusCode = err.statusCode || 500
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  })
+})
 
 // app.use((err, req: Request, res: Response, next: NextFunction) => {
 //   if (err.type === 'auth') {
