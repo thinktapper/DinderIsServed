@@ -99,9 +99,9 @@ auth.post('/login', async (req, res) => {
     //   process.env.SECRET,
     // )
 
-    // return res.json({ success: true, accessToken })
     const user = removePasswordAddToken(updatedUser)
     return res.status(200).json({ success: true, user })
+    // return res.json({ success: true, accessToken })
   } else {
     return res.json({ success: false, error: 'Invalid password' })
   }
@@ -158,5 +158,5 @@ auth.post('/logout', isAuth, async (req, res) => {
     },
   })
 
-  res.json({ success: true })
+  res.status(201).json({ success: true })
 })

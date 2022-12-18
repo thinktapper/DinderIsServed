@@ -75,96 +75,96 @@ user.get('/feasts', async (req, res) => {
   }
 })
 
-user.put('/update', async (req, res, next) => {
-  // const newUserData = { ...req.body }
-  // console.log(
-  //   `attempting to update user ${req.user} with ${JSON.stringify(req.body)}`,
-  // )
-  try {
-    let updatedUser
-    if (req.body.username) {
-      const existing = await prisma.user.findFirst({
-        where: {
-          username: req.body.username,
-        },
-      })
-      if (existing && req.user!.username !== req.body.username) {
-        return res
-          .status(401)
-          .json({ status: 'fail', message: 'username is already taken' })
-      }
+// user.put('/update', async (req, res, next) => {
+//   // const newUserData = { ...req.body }
+//   // console.log(
+//   //   `attempting to update user ${req.user} with ${JSON.stringify(req.body)}`,
+//   // )
+//   try {
+//     let updatedUser
+//     if (req.body.username) {
+//       const existing = await prisma.user.findFirst({
+//         where: {
+//           username: req.body.username,
+//         },
+//       })
+//       if (existing && req.user!.username !== req.body.username) {
+//         return res
+//           .status(401)
+//           .json({ status: 'fail', message: 'username is already taken' })
+//       }
 
-      updatedUser = await prisma.user.update({
-        where: {
-          id: req.user!.id,
-        },
-        data: {
-          username: req.body.username,
-        },
-      })
-    }
+//       updatedUser = await prisma.user.update({
+//         where: {
+//           id: req.user!.id,
+//         },
+//         data: {
+//           username: req.body.username,
+//         },
+//       })
+//     }
 
-    if (req.body.email) {
-      const existing = await prisma.user.findFirst({
-        where: {
-          email: req.body.email,
-        },
-      })
-      if (existing && req.user!.email !== req.body.email) {
-        return res
-          .status(401)
-          .json({ status: 'fail', message: 'email is already taken' })
-      }
+//     if (req.body.email) {
+//       const existing = await prisma.user.findFirst({
+//         where: {
+//           email: req.body.email,
+//         },
+//       })
+//       if (existing && req.user!.email !== req.body.email) {
+//         return res
+//           .status(401)
+//           .json({ status: 'fail', message: 'email is already taken' })
+//       }
 
-      updatedUser = await prisma.user.update({
-        where: {
-          id: req.user!.id,
-        },
-        data: {
-          email: req.body.email,
-        },
-      })
-    }
+//       updatedUser = await prisma.user.update({
+//         where: {
+//           id: req.user!.id,
+//         },
+//         data: {
+//           email: req.body.email,
+//         },
+//       })
+//     }
 
-    // const updatedUser = await prisma.user.update({
-    //   where: {
-    //     id: req.user!.id,
-    //   },
-    //   data: req.body,
-    // })
+//     // const updatedUser = await prisma.user.update({
+//     //   where: {
+//     //     id: req.user!.id,
+//     //   },
+//     //   data: req.body,
+//     // })
 
-    if (!updatedUser) {
-      // return next(new AppError(400, 'could not update user'))
-      res
-        .status(500)
-        .json({ success: false, message: `could not update user: ${req.user}` })
-    }
+//     if (!updatedUser) {
+//       // return next(new AppError(400, 'could not update user'))
+//       res
+//         .status(500)
+//         .json({ success: false, message: `could not update user: ${req.user}` })
+//     }
 
-    const user = removePasswordAddToken(updatedUser)
-    return res.status(200).json({ status: 'success', user })
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: `could not update user: ${err}` })
-    return next(new AppError(401, `could not update user: ${err}`))
-  }
-})
+//     const user = removePasswordAddToken(updatedUser)
+//     return res.status(200).json({ status: 'success', user })
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ success: false, message: `could not update user: ${err}` })
+//     return next(new AppError(401, `could not update user: ${err}`))
+//   }
+// })
 
-user.patch('/update', async (req, res) => {
+user.put('/update', async (req, res) => {
   try {
     // const { id } = req.params
-    const { patch } = req.body
-    if (!patch) {
-      return res
-        .status(400)
-        .json({ message: 'this endpoint requires a patch in the body' })
-    }
+    // const { patch } = req.body
+    // if (!patch) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: 'this endpoint requires a patch in the body' })
+    // }
 
     const updatedUser = await prisma.user.update({
       where: {
         id: req.user!.id,
       },
-      data: patch,
+      data: { ...req.body },
     })
 
     const user = removePasswordAddToken(updatedUser)
@@ -173,6 +173,23 @@ user.patch('/update', async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: `could not update user: ${err}` })
+  }
+})
+
+user.post('/logout', async (req, res) => {
+  try {
+    await prisma.user.update({
+      where: {
+        id: req.user?.id,
+      },
+      data: {
+        sessionID: '',
+      },
+    })
+
+    res.status(201).json({ success: true })
+  } catch (err) {
+    res.status(500).json({ success: false, message: `${err}` })
   }
 })
 
