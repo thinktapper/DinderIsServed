@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { request } from 'express'
 import prisma from '../db'
+import AppError from '../modules/appError'
 import { fetchPlaces } from '../modules/fetchPlaces'
 
 // Get all feasts
@@ -51,7 +52,7 @@ export const getFeast = async (req, res, next) => {
         places: true,
       },
     })
-    res.status(200).json({ success: true, feast, places: feast.places })
+    res.status(200).json({ success: true, feast })
   } catch (err) {
     next(err)
   }
@@ -67,8 +68,8 @@ export const createFeast = async (req, res, next) => {
     radius: number
   }
   let fetchedPlaces = []
-  const feast = await prisma.feast
-    .create({
+  try {
+    const feast = await prisma.feast.create({
       data: {
         name: req.body.name,
         startDate: req.body.startDate,
@@ -88,18 +89,33 @@ export const createFeast = async (req, res, next) => {
         herd: req.body.herdId ? { connect: { id: req.body.herdId } } : {},
       },
     })
-    .then(async (feast) => {
-      fetchedPlaces = await fetchPlaces({ feast })
-      // const places = await prisma.place.createMany({
-      //   data: fetchedPlaces,
-      //   skipDuplicates: true,
-      // })
-      // res.json({ ok: true, data: { feast, places: fetchedPlaces } })
-      res.status(201).json({ success: true, feast })
+
+    req.newFeast = feast
+    next()
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Could not create new feast: ${err.message}`,
     })
-    .catch((err) => {
-      next(err)
-    })
+    return new AppError(500, `Error creating feast: ${err}`)
+  }
+  // .then(async (feast) => {
+  //   fetchedPlaces = await fetchPlaces({ feast })
+  //   // const places = await prisma.place.createMany({
+  //   //   data: fetchedPlaces,
+  //   //   skipDuplicates: true,
+  //   // })
+  //   // res.json({ ok: true, data: { feast, places: fetchedPlaces } })
+  //   console.log(`Fetched places: ${fetchPlaces}`)
+  //   res.status(201).json({
+  //     success: true,
+  //     feast: feast,
+  //     places: [...fetchedPlaces],
+  //   })
+  // })
+  // .catch((err) => {
+  //   next(err)
+  // })
   // await fetchPlaces(feast)
   // Create places for the feast
   // const fetchedPlaces = next(fetchPlaces({ feast }))

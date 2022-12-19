@@ -22,7 +22,8 @@ const GOOGLE_API = process.env.GOOGLE_API
 //   radius: number
 // }
 
-export const fetchPlaces = async ({ feast }) => {
+export const fetchPlaces = async (req, res) => {
+  const feast = req.newFeast
   const { location, radius } = feast
   const feastId = feast.id
   const { lat, long } = location
@@ -33,6 +34,8 @@ export const fetchPlaces = async ({ feast }) => {
     'name,place_id,rating,user_ratings_total,price_level,photos,editorial_summary'
   const extraFields =
     'opening_hours,formatted_address,formatted_phone_number,website'
+
+  const feastPlaces = []
 
   // fetch data from Google Maps API
   try {
@@ -102,7 +105,7 @@ export const fetchPlaces = async ({ feast }) => {
           description: summary,
         }
 
-        await prisma.place.create({
+        let newPlace = await prisma.place.create({
           data: {
             ...place,
             feast: {
@@ -131,15 +134,22 @@ export const fetchPlaces = async ({ feast }) => {
         //   },
         // })
 
+        feastPlaces.push(newPlace)
         fetchedPlaces.push(place)
       })
-      return fetchedPlaces
 
-      // res.status(200).json({ data: feast, places: fetchedPlaces })
+      // const places = await prisma.place.createMany()
+      // return fetchedPlaces
+      // console.log(JSON.stringify(feastPlaces))
+      res.status(200).json({ success: true, feast: req.newFeast })
     }
   } catch (error) {
-    console.error(`Error fetching places from Google: ${error}`)
+    console.log(`Error fetching places from Google: ${error}`)
     // next(error)
-    throw new Error(error)
+    // throw new Error(error)
+    res.status(405).json({
+      success: false,
+      message: `Could not fetch place details from google: ${error.message}`,
+    })
   }
 }
