@@ -1,35 +1,24 @@
 import axios from 'axios'
 import prisma from '../db'
 import type { Request, Response, NextFunction } from 'express'
-import type { Place, Prisma } from '@prisma/client'
+import type { Place, Prisma, Feast, User } from '@prisma/client'
 
 const GOOGLE_API = process.env.GOOGLE_API
 
-// type Place = {
-//   name: string
-//   googleId: string
-//   price?: string
-//   description?: string
-//   rating?: string
-//   ratingsTotal?: string
-//   stars?: string
-//   photos: string[]
-// }
-// type Feast = {
-//   id: string
-//   name: string
-//   location: Prisma.JsonObject
-//   radius: number
-// }
+export interface NewFeastRequest extends Request {
+  // user: User,
+  newFeast: any
+}
 
-export const fetchPlaces = async (req, res) => {
+export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
   const feast = req.newFeast
   const { location, radius } = feast
   const feastId = feast.id
   const { lat, long } = location
   const distance = radius * 1609.34
   const googlePlacesBaseUrl = 'https://maps.googleapis.com/maps/api/place'
-  const searchUrl = `${googlePlacesBaseUrl}/textsearch/json?query=restaurants&locationbias=circle%3A${distance}%40${lat}%2C${long}&key=${GOOGLE_API}`
+  // const searchUrl = `${googlePlacesBaseUrl}/textsearch/json?query=restaurants&locationbias=circle%3A${distance}%40${lat}%2C${long}&key=${GOOGLE_API}`
+  const searchUrl = `${googlePlacesBaseUrl}/nearbysearch/json?location=${lat}%2C${long}&radius=${distance}&type=restaurant&key=${GOOGLE_API}`
   const fields =
     'name,place_id,rating,user_ratings_total,price_level,photos,editorial_summary'
   const extraFields =
@@ -139,9 +128,9 @@ export const fetchPlaces = async (req, res) => {
       })
 
       // const places = await prisma.place.createMany()
-      // return fetchedPlaces
       // console.log(JSON.stringify(feastPlaces))
       res.status(200).json({ success: true, feast: req.newFeast })
+      return fetchedPlaces
     }
   } catch (error) {
     console.log(`Error fetching places from Google: ${error}`)

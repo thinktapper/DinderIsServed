@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, Feast } from '@prisma/client'
 import { request } from 'express'
 import prisma from '../db'
 import AppError from '../modules/appError'
@@ -60,37 +60,48 @@ export const getFeast = async (req, res, next) => {
 
 // Create a feast
 export const createFeast = async (req, res, next) => {
-  // try {
-  type Feast = {
-    id: string
-    name: string
-    location: JSON
-    radius: number
-  }
-  try {
-    const feast = await prisma.feast.create({
-      data: {
-        name: req.body.name,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        location: req.body.location,
-        radius: req.body.radius,
-        organizer: {
-          connect: {
-            id: req.user.id,
-          },
-        },
-        // herd: {
-        //   connect: {
-        //     id: req.body.herdId,
-        //   },
-        // },
-        herd: req.body.herdId ? { connect: { id: req.body.herdId } } : {},
-      },
-    })
+  // type Feast = {
+  //   id: string
+  //   name: string
+  //   location: JSON
+  //   radius: number
+  // }
 
-    req.newFeast = feast
-    next()
+  try {
+    const feast = await prisma.feast
+      .create({
+        data: {
+          name: req.body.name,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          location: req.body.location,
+          radius: req.body.radius,
+          organizer: {
+            connect: {
+              id: req.user.id,
+            },
+          },
+          // herd: {
+          //   connect: {
+          //     id: req.body.herdId,
+          //   },
+          // },
+          herd: req.body.herdId ? { connect: { id: req.body.herdId } } : null,
+        },
+      })
+      .then(async (feast: Feast) => {
+        req.newFeast = feast
+        next()
+        // const fetchedPlaces = await fetchPlaces(req, res)
+        // const places = await prisma.place.createMany({
+        //   data: fetchedPlaces,
+        //   skipDuplicates: true,
+        // })
+        // res.json({ success: true, data: { feast, places: fetchedPlaces } })
+      })
+
+    // req.newFeast = feast
+    // next()
   } catch (err) {
     res.status(500).json({
       success: false,

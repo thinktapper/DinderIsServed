@@ -87,7 +87,7 @@ model Feast {
   startDate DateTime? @default(now()) @db.Date
   endDate   DateTime? @db.Date
   closed    Boolean?  @default(false)
-  location  Json      @db.Json
+  location  Json
   radius    Int
 
   herd        Herd?   @relation(fields: [herdId], references: [id], onDelete: Cascade)
