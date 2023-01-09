@@ -43,12 +43,12 @@ export const getOrganizedFeasts = async (req, res, next) => {
 // Get one feast
 export const getFeast = async (req, res, next) => {
   try {
-    const { id } = req.body
-    const feast = await prisma.feast.findFirst({
+    // const { id } = req.body
+    const feast = await prisma.feast.findUniqueOrThrow({
       where: {
-        id: id,
+        id: req.params.id,
       },
-      include: {
+      select: {
         places: true,
       },
     })
@@ -67,7 +67,6 @@ export const createFeast = async (req, res, next) => {
     location: JSON
     radius: number
   }
-  let fetchedPlaces = []
   try {
     const feast = await prisma.feast.create({
       data: {
