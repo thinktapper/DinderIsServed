@@ -76,7 +76,7 @@ export const createVote = async (req, res, next) => {
         voteType: req.body.voteType,
       },
     })
-    res.json({ ok: true, data: vote })
+    res.json({ success: true, vote })
   } catch (err) {
     console.log(err)
     next(err)

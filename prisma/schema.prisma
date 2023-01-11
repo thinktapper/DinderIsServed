@@ -27,55 +27,55 @@ model User {
   password  String
   sessionID String?
 
-  herds           HerdMembership[]
-  organizedFeasts Feast[]          @relation(name: "organizer")
-  votes           Vote[]           @relation(name: "votes")
+  // herds           HerdMembership[]
+  organizedFeasts Feast[] @relation(name: "organizer")
+  votes           Vote[]  @relation(name: "votes")
 
   // @@unique([username, email])
   // @@index([username, email])
   // @@map(name: "users")
-  invited HerdInvite[] @relation(name: "inviter")
+  // invited HerdInvite[] @relation(name: "inviter")
 }
 
-model Herd {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
+// model Herd {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   name      String   @db.VarChar(255)
 
-  // shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id], onDelete: Cascade)
-  // shepherdId String
-  members HerdMembership[]
-  feasts  Feast[]
-  invites HerdInvite[]
-}
+// shepherd   User   @relation(name: "shepHerds", fields: [shepherdId], references: [id], onDelete: Cascade)
+// shepherdId String
+// members HerdMembership[]
+// feasts  Feast[]
+// invites HerdInvite[]
+// }
 
-model HerdMembership {
-  createdAt DateTime @default(now())
-  role      UserRole
+// model HerdMembership {
+//   createdAt DateTime @default(now())
+//   role      UserRole
 
-  herd   Herd   @relation(fields: [herdId], references: [id], onDelete: Cascade)
-  herdId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+//   herd   Herd   @relation(fields: [herdId], references: [id], onDelete: Cascade)
+//   herdId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId String
 
-  @@id([herdId, userId])
-  @@index([userId, role])
-}
+//   @@id([herdId, userId])
+//   @@index([userId, role])
+// }
 
-model HerdInvite {
-  createdAt   DateTime @default(now())
-  inviteToken String?  @unique
+// model HerdInvite {
+//   createdAt   DateTime @default(now())
+//   inviteToken String?  @unique
 
-  inviter       User   @relation(name: "inviter", fields: [inviterId], references: [id], onDelete: Cascade)
-  inviterId     String
-  invitedHerd   Herd   @relation(fields: [invitedHerdId], references: [id], onDelete: Cascade)
-  invitedHerdId String
+//   inviter       User   @relation(name: "inviter", fields: [inviterId], references: [id], onDelete: Cascade)
+//   inviterId     String
+//   invitedHerd   Herd   @relation(fields: [invitedHerdId], references: [id], onDelete: Cascade)
+//   invitedHerdId String
 
-  inviteeEmail String?
+//   inviteeEmail String?
 
-  @@id([inviterId, invitedHerdId])
-}
+//   @@id([inviterId, invitedHerdId])
+// }
 
 model Feast {
   id        String    @id @default(cuid())
@@ -90,9 +90,9 @@ model Feast {
   location  Json
   radius    Int
 
-  herd        Herd?   @relation(fields: [herdId], references: [id], onDelete: Cascade)
-  herdId      String?
-  organizer   User    @relation(name: "organizer", fields: [organizerId], references: [id])
+  // herd        Herd?   @relation(fields: [herdId], references: [id], onDelete: Cascade)
+  // herdId      String?
+  organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id])
   organizerId String
 
   places      Place[]

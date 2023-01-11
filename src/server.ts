@@ -13,7 +13,7 @@ import { auth as authRoutes } from './routes/auth'
 import { user as userRoutes } from './routes/user'
 import { place as placeRoutes } from './routes/place'
 import { vote as voteRoutes } from './routes/vote'
-import { herd as herdRoutes } from './routes/herd'
+// import { herd as herdRoutes } from './routes/herd'
 import { feast as feastRoutes } from './routes/feast'
 import { isAuth } from './middleware/isAuth'
 import AppError from './modules/appError'
@@ -68,7 +68,7 @@ if (
 // Routes
 app.use('/', authRoutes)
 app.use('/api/user', isAuth, userRoutes)
-app.use('/api/herd', isAuth, herdRoutes)
+// app.use('/api/herd', isAuth, herdRoutes)
 app.use('/api/feast', isAuth, feastRoutes)
 app.use('/api/place', isAuth, placeRoutes)
 app.use('/api/vote', isAuth, voteRoutes)

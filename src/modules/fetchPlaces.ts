@@ -79,17 +79,26 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
         // Transform rating to stars
         let starRating = ''
         if (googlePlace.rating) {
+          googlePlace.rating.toString()
+
           for (let i = 0; i < googlePlace.rating; i++) {
             starRating += '★'
           }
         }
+
+        // stringify
+        pl = pl.toString()
+        let user_ratings_total =
+          googlePlace.user_ratings_total?.toString() || 'N/A'
+        starRating = starRating?.toString()
+
         let place = {
           googleId: googlePlace.place_id,
           name: googlePlace.name,
-          price: pl.toString(),
-          rating: googlePlace.rating.toString() || 'No ratings',
-          ratingsTotal: googlePlace.user_ratings_total.toString() || 'N/A',
-          stars: starRating.toString(),
+          price: pl,
+          rating: googlePlace.rating || 'No ratings',
+          ratingsTotal: user_ratings_total,
+          stars: starRating,
           photos: gallery,
           description: summary,
         }
@@ -129,8 +138,10 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
 
       // const places = await prisma.place.createMany()
       // console.log(JSON.stringify(feastPlaces))
-      res.status(200).json({ success: true, feast: req.newFeast })
-      return fetchedPlaces
+      res
+        .status(200)
+        .json({ success: true, feast: req.newFeast, places: feastPlaces })
+      // return fetchedPlaces
     }
   } catch (error) {
     console.log(`Error fetching places from Google: ${error}`)
