@@ -100,6 +100,7 @@ export const createFeast = async (req, res, next) => {
     // })
 
     req.newFeast = feast
+    console.log('req.newFeast: ', { ...feast })
     next()
   } catch (err) {
     res.status(500).json({

@@ -18,7 +18,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
   const distance = radius * 1609.34
   const googlePlacesBaseUrl = 'https://maps.googleapis.com/maps/api/place'
   // const searchUrl = `${googlePlacesBaseUrl}/textsearch/json?query=restaurants&locationbias=circle%3A${distance}%40${lat}%2C${long}&key=${GOOGLE_API}`
-  const searchUrl = `${googlePlacesBaseUrl}/nearbysearch/json?location=${lat}%2C${long}&radius=${distance}&type=restaurant&key=${GOOGLE_API}`
+  const searchUrl = `${googlePlacesBaseUrl}/nearbysearch/json?location=${lat}%2C${long}&radius=${distance}&type=restaurant&keyword=food&key=${GOOGLE_API}`
   const fields =
     'name,place_id,rating,user_ratings_total,price_level,photos,editorial_summary'
   const extraFields =
@@ -88,6 +88,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
 
         // stringify
         pl = pl.toString()
+        let strRating = googlePlace.rating.toString() || 'No ratings'
         let user_ratings_total =
           googlePlace.user_ratings_total?.toString() || 'N/A'
         starRating = starRating?.toString()
@@ -96,7 +97,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
           googleId: googlePlace.place_id,
           name: googlePlace.name,
           price: pl,
-          rating: googlePlace.rating || 'No ratings',
+          rating: strRating,
           ratingsTotal: user_ratings_total,
           stars: starRating,
           photos: gallery,
@@ -136,11 +137,20 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
         fetchedPlaces.push(place)
       })
 
+      const feast = await prisma.feast.findFirst({
+        where: {
+          id: feastId,
+        },
+        include: {
+          places: true,
+        },
+      })
+
       // const places = await prisma.place.createMany()
-      // console.log(JSON.stringify(feastPlaces))
+      console.log(feast)
       res
         .status(200)
-        .json({ success: true, feast: req.newFeast, places: feastPlaces })
+        .json({ success: true, feast: { ...feast }, places: [...feastPlaces] })
       // return fetchedPlaces
     }
   } catch (error) {
