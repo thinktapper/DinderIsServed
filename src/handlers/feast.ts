@@ -71,10 +71,11 @@ export const createFeast = async (req, res, next) => {
     const feast = await prisma.feast.create({
       data: {
         name: req.body.name,
-        startDate: req.body.startDate,
+        image: req.body.image,
+        startDate: req.body.startDate ? req.body.startDate : null,
         endDate: req.body.endDate,
         location: req.body.location,
-        radius: req.body.radius,
+        radius: parseInt(req.body.radius),
         organizer: {
           connect: {
             id: req.user.id,
@@ -88,54 +89,18 @@ export const createFeast = async (req, res, next) => {
         // herd: req.body.herdId ? { connect: { id: req.body.herdId } } : null,
       },
     })
-    // .then(async (feast: Feast) => {
-    //   req.newFeast = feast
-    //   next()
-    // const fetchedPlaces = await fetchPlaces(req, res)
-    // const places = await prisma.place.createMany({
-    //   data: fetchedPlaces,
-    //   skipDuplicates: true,
-    // })
-    // res.json({ success: true, feast })
-    // })
 
     req.newFeast = feast
-    console.log('req.newFeast: ', { ...feast })
+    // console.log('req.newFeast: ', { ...feast })
     next()
   } catch (err) {
+    console.log(err)
     res.status(500).json({
       success: false,
       message: `Could not create new feast: ${err.message}`,
     })
     return new AppError(500, `Error creating feast: ${err}`)
   }
-  // .then(async (feast) => {
-  //   fetchedPlaces = await fetchPlaces({ feast })
-  //   // const places = await prisma.place.createMany({
-  //   //   data: fetchedPlaces,
-  //   //   skipDuplicates: true,
-  //   // })
-  //   // res.json({ ok: true, data: { feast, places: fetchedPlaces } })
-  //   console.log(`Fetched places: ${fetchPlaces}`)
-  //   res.status(201).json({
-  //     success: true,
-  //     feast: feast,
-  //     places: [...fetchedPlaces],
-  //   })
-  // })
-  // .catch((err) => {
-  //   next(err)
-  // })
-  // await fetchPlaces(feast)
-  // Create places for the feast
-  // const fetchedPlaces = next(fetchPlaces({ feast }))
-  // res.json({ ok: true, data: feast, fetchedPlaces })
-
-  // next(feast)
-  // } catch (err) {
-  //   console.log(err)
-  //   next(err)
-  // }
 }
 
 // Update a feast

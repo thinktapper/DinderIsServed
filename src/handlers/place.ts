@@ -67,6 +67,7 @@ export const createPlace = async (req, res, next) => {
         ratingsTotal: req.body.ratingsTotal,
         stars: req.body.stars,
         photos: req.body.photos,
+        votes: req.body.votes ? req.body.votes : [],
       },
     })
     res.json({ ok: true, data: place })

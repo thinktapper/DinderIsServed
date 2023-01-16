@@ -31,14 +31,14 @@ export const isAuth = async (
     tokenBody = jwt.verify(accessToken, process.env.SECRET)
     // console.log('tokenBody: ', tokenBody)
   } catch (err) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       error: 'invalid token',
     })
   }
 
   if (!tokenBody.id) {
-    return res.json({ success: false, error: 'invalid token' })
+    return res.status(401).json({ success: false, error: 'invalid token' })
   }
 
   const user = await prisma.user.findUnique({

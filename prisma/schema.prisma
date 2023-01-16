@@ -82,10 +82,9 @@ model Feast {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   name      String    @db.VarChar(255)
-  // start     String?  @db.VarChar(255)
-  // end       String?  @db.VarChar(255)
-  startDate DateTime? @default(now()) @db.Date
-  endDate   DateTime? @db.Date
+  image     String?
+  startDate DateTime? @default(now())
+  endDate   DateTime
   closed    Boolean?  @default(false)
   location  Json
   radius    Int
