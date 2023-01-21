@@ -106,28 +106,90 @@ export const createFeast = async (req, res, next) => {
 // Update a feast
 export const updateFeast = async (req, res, next) => {
   try {
+    // Get poll data from request body
+    // const { id, formData } = req.body
+    // const { id } = req.params
+
+    // Check if the user is the organizer of the poll
+    const feast = await prisma.feast.findUnique({
+      where: {
+        id: req.params.id,
+      },
+    })
+    if (!feast || feast.organizerId !== req.user.id) {
+      res.status(401).json({ success: false, error: 'Unauthorized' })
+      return
+    }
+
+    // Update the poll
     const updated = await prisma.feast.update({
       where: {
         id: req.params.id,
       },
-      data: req.body,
+      data: { ...req.body },
     })
-    res.json({ ok: true, data: updated })
+
+    res.status(200).json({ success: true, updated })
+    // const updated = await prisma.feast.update({
+    //   where: {
+    //     id: req.params.id,
+    //   },
+    //   data: req.body,
+    // })
+    // res.json({ ok: true, data: updated })
   } catch (err) {
+    console.log(err)
     next(err)
   }
 }
 
 // Delete a feast
 export const deleteFeast = async (req, res, next) => {
+  // try {
+  //   const deleted = await prisma.feast.delete({
+  //     where: {
+  //       id: req.params.id,
+  //     },
+  //   })
+  //   res.json({ ok: true, data: deleted })
+  // } catch (err) {
+  //   next(err)
+  // }
   try {
-    const deleted = await prisma.feast.delete({
-      where: {
-        id: req.params.id,
-      },
-    })
-    res.json({ ok: true, data: deleted })
+    // Get poll ID from request params
+    const { id } = req.params
+
+    // Check if the user is the organizer of the poll
+    const feast = await prisma.feast.findUnique({ where: { id } })
+    if (!feast || feast.organizerId !== req.user.id) {
+      res.status(401).json({ success: false, error: 'Unauthorized' })
+      return
+    }
+
+    // Delete the poll
+    await prisma.feast.delete({ where: { id } })
+
+    res.status(204).json({ success: true })
+    // const feast = await prisma.feast.findFirst({
+    //   where: {
+    //     id: req.body.feastId,
+    //   },
+    //   include: {
+    //     organizer: true,
+    //   },
+    // })
+    // if (feast.organizer !== req.user.id) {
+    //   return res.status(401).json({ success: false, message: 'Unauthorized' })
+    // }
+
+    // const deleted = await prisma.feast.delete({
+    //   where: {
+    //     id: req.body.feastId,
+    //   },
+    // })
+    // res.status(200).json({ success: true, deleted })
   } catch (err) {
+    console.log(err)
     next(err)
   }
 }

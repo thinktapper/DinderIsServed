@@ -7,11 +7,11 @@ export const getVotes = async (req, res, next) => {
       where: {
         id: req.user.id,
       },
-      include: {
+      select: {
         votes: true,
       },
     })
-    res.json({ ok: true, data: votes })
+    res.status(204).json({ success: true, votes })
   } catch (err) {
     console.log(err)
     next(err)
@@ -30,7 +30,7 @@ export const getPlaceVotes = async (req, res, next) => {
       },
     })
 
-    res.json({ ok: true, data: votes })
+    res.status(200).json({ success: true, votes })
   } catch (err) {
     console.log(err)
     next(err)
