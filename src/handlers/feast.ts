@@ -49,12 +49,79 @@ export const getFeast = async (req, res, next) => {
         id: req.params.id,
       },
       select: {
+        id: true,
+        name: true,
+        image: true,
+        closed: true,
+        guestList: true,
         places: true,
+        voteResults: true,
+        winner: true,
       },
     })
     res.status(200).json({ success: true, feast })
   } catch (err) {
     next(err)
+  }
+}
+
+// Get feast voting status
+export const getFeastPulse = async (req, res, next) => {
+  let userNum = 0
+  let voteNum = 0
+  let votingFinished = false
+  const currentDay = new Date().toISOString()
+
+  try {
+    // const { id } = req.body
+    const feast = await prisma.feast.findUniqueOrThrow({
+      where: {
+        id: req.params.id,
+      },
+      select: {
+        id: true,
+        endDate: true,
+        closed: true,
+        guestList: true,
+        places: true,
+        voteResults: true,
+        winner: true,
+      },
+    })
+
+    // TODO: check date and set clodes
+    // if(feast.closed === false && feast.endDate < currentDay){
+
+    // }
+    // const feastVotes = await prisma.vote.aggregate({
+    //   where: {
+    //     feastId: feast.id
+    //   },
+    //   _count:
+    // })
+    const feastVotes = await prisma.vote.count({
+      where: {
+        feastId: feast.id,
+      },
+    })
+    userNum = feast.guestList.length + 1
+    voteNum = feastVotes
+    let expVotes = userNum * 10
+
+    if (voteNum / expVotes >= 0.65 || feast.closed === true) {
+      votingFinished = true
+    }
+
+    if (votingFinished) {
+      req.feastPulse = feast
+      next()
+    } else {
+      res.status(203).json({ success: true, votingFinished })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ success: false, err })
+    // next(err)
   }
 }
 
@@ -67,7 +134,9 @@ export const createFeast = async (req, res, next) => {
     //   guest.username ? { username: guest.username } : { username: guests[i] },
     // )
     guests.forEach((val) => {
-      guestArr.push({ username: val.toString() })
+      if (val != undefined && val != null) {
+        guestArr.push({ username: val.toString() })
+      }
     })
   }
   console.debug(guests, guestArr)

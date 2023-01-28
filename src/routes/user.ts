@@ -122,9 +122,27 @@ user.get('/feasts', async (req, res) => {
         },
       },
     })
+    // const joined = await prisma.user.findMany({
+    //   where: {
+    //     id: req.user!.id,
+    //   },
+    //   include: {
+    //     joinedFeasts: true,
+    //   },
+    // })
 
-    const feasts = [...organizedFeasts, ...joinedFeasts]
+    let feasts = [...organizedFeasts, ...joinedFeasts]
+    feasts.flatMap((feast) => feast)
+    // const feasts = organizedFeasts.concat(...joinedFeasts)
 
+    if (feasts.length > 0) {
+      return res.status(200).json({ success: true, feasts })
+    } else {
+      const newLocal = { ...feasts }
+      throw new Error(
+        `ERROR getting all users feasts -> gathered feasts array: ${newLocal}`,
+      )
+    }
     // const feasts = await prisma.feast.findMany({
     //   where: {
     //       guestList: {
@@ -145,12 +163,10 @@ user.get('/feasts', async (req, res) => {
     //       OR: [{ organizerId: req.user.id }, { join_some: { userId: userId } }],
     //     },
     //   })
-
-    return res.status(200).json({ success: true, feasts })
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: `could not get feasts for id ${req.user?.id}: ${err}`,
+      message: `could not get feasts for id ${req.user?.id}: ${err.message}`,
     })
   }
 })
