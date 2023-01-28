@@ -142,6 +142,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
           id: feastId,
         },
         include: {
+          guestList: true,
           places: true,
         },
       })
@@ -149,12 +150,10 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
       // const places = await prisma.place.createMany()
       console.log(feast)
 
-      res
-        .status(200)
-        .json({
-          success: true,
-          data: { feast: { ...feast }, places: feastPlaces },
-        })
+      res.status(200).json({
+        success: true,
+        data: { feast: { ...feast } },
+      })
       // return fetchedPlaces
     }
   } catch (error) {

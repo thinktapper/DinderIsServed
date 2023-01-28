@@ -1,4 +1,5 @@
 import prisma from '../db'
+import { Feast } from '@prisma/client'
 // import { isAuth } from '../middleware/isAuth'
 import { Router } from 'express'
 import { removePasswordAddToken } from './auth'
@@ -52,21 +53,100 @@ user.get('/me', async (req, res) => {
   // return res.json({ success: true, sessionID: user.sessionID })
 })
 
+user.get('/all', async (req, res) => {
+  try {
+    const id = req.user!.id
+    if (!id) {
+      return res
+        .status(401)
+        .json({ success: false, error: 'Missing credentials' })
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        image: {
+          not: null,
+        },
+      },
+      select: {
+        id: true,
+        username: true,
+        image: true,
+        joinedFeasts: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    if (!users) {
+      console.log('prisma ERROR: error in findmany query')
+      return res.status(301).json({ success: false, error: 'Oops! DB error' })
+    }
+    console.log('all users with images:', JSON.stringify(users))
+
+    const usersData = users.filter((user) => user.id !== id)
+    console.log('filtered users:', JSON.stringify(usersData))
+
+    if (!usersData) {
+      return res.status(302).json({ success: false, error: 'Oops! my bad..' })
+    }
+
+    // const user = removePasswordAddToken(userData)
+    return res.status(200).json({ success: true, users: usersData })
+  } catch (err) {
+    console.log(`Error getting all users: ${err}`)
+
+    return res.status(500).json({
+      success: false,
+      message: `could not get users data: ${err.message}`,
+    })
+  }
+})
+
 user.get('/feasts', async (req, res) => {
   // const { id } = req.params
 
   try {
-    const feasts = await prisma.user.findFirst({
+    const organizedFeasts = await prisma.feast.findMany({
       where: {
-        id: req.user!.id,
-      },
-      select: {
-        organizedFeasts: true,
+        organizerId: req.user!.id,
       },
     })
-    return res
-      .status(200)
-      .json({ success: true, feasts: feasts.organizedFeasts })
+    const joinedFeasts = await prisma.feast.findMany({
+      where: {
+        guestList: {
+          some: {
+            id: req.user!.id,
+          },
+        },
+      },
+    })
+
+    const feasts = [...organizedFeasts, ...joinedFeasts]
+
+    // const feasts = await prisma.feast.findMany({
+    //   where: {
+    //       guestList: {
+    //         some: {
+    //           id: req.user!.id,
+    //         },
+    //       },
+    //     },
+    //   },
+    // })
+    // let feastsArr = Object.values({ ...feasts })
+    // feastsArr = feastsArr.flat()
+
+    // let feasts = await prisma.user
+    //   .findUnique({ where: { id: req.user!.id } })
+    //   .feasts({
+    //     where: {
+    //       OR: [{ organizerId: req.user.id }, { join_some: { userId: userId } }],
+    //     },
+    //   })
+
+    return res.status(200).json({ success: true, feasts })
   } catch (err) {
     return res.status(500).json({
       success: false,

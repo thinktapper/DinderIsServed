@@ -24,11 +24,14 @@ model User {
   updatedAt DateTime @updatedAt
   email     String   @unique
   username  String   @unique
+  image     String?  @db.VarChar(255)
   password  String
+
   sessionID String?
 
   // herds           HerdMembership[]
   organizedFeasts Feast[] @relation(name: "organizer")
+  joinedFeasts    Feast[] @relation(name: "guests")
   votes           Vote[]  @relation(name: "votes")
 
   // @@unique([username, email])
@@ -93,6 +96,7 @@ model Feast {
   // herdId      String?
   organizer   User   @relation(name: "organizer", fields: [organizerId], references: [id])
   organizerId String
+  guestList   User[] @relation(name: "guests")
 
   places      Place[]
   voteResults Vote[]

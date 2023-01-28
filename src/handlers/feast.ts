@@ -60,12 +60,17 @@ export const getFeast = async (req, res, next) => {
 
 // Create a feast
 export const createFeast = async (req, res, next) => {
-  // type Feast = {
-  //   id: string
-  //   name: string
-  //   location: JSON
-  //   radius: number
-  // }
+  const guests = req.body.guests
+  let guestArr = []
+  if (guests.length > 0) {
+    // guestArr = guests.map((guest, i) =>
+    //   guest.username ? { username: guest.username } : { username: guests[i] },
+    // )
+    guests.forEach((val) => {
+      guestArr.push({ username: val.toString() })
+    })
+  }
+  console.debug(guests, guestArr)
 
   try {
     const feast = await prisma.feast.create({
@@ -81,12 +86,21 @@ export const createFeast = async (req, res, next) => {
             id: req.user.id,
           },
         },
+        guestList: {
+          connect: [
+            { username: guests[0].toString() },
+            { username: guests[1].toString() },
+          ],
+        },
         // herd: {
         //   connect: {
         //     id: req.body.herdId,
         //   },
         // },
         // herd: req.body.herdId ? { connect: { id: req.body.herdId } } : null,
+      },
+      include: {
+        guestList: true,
       },
     })
 
