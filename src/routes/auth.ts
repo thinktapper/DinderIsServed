@@ -26,7 +26,10 @@ export function removePasswordAddToken(
 
 auth.post('/signup', async (req, res) => {
   try {
-    const { email, password, username, image } = req.body
+    const { email, password, username } = req.body
+    const image =
+      req.body.image ||
+      'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/929.jpg'
 
     if (!email || !password || !username) {
       return res.json({
@@ -50,11 +53,8 @@ auth.post('/signup', async (req, res) => {
       data: {
         email: email,
         username: username,
-        image:
-          image.length > 0
-            ? image
-            : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
         password: hashedPassword,
+        image: image,
       },
     })
 

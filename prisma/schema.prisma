@@ -81,14 +81,14 @@ model User {
 // }
 
 model Feast {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  name      String    @db.VarChar(255)
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
   image     String?
-  startDate DateTime? @default(now())
+  startDate DateTime @default(now())
   endDate   DateTime
-  closed    Boolean?  @default(false)
+  closed    Boolean? @default(false)
   location  Json
   radius    Int
 
