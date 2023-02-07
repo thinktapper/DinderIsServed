@@ -1,7 +1,7 @@
 // import { Request, Response, NextFunction } from 'express'
 import prisma from '../db'
 
-export async function preventMischievousVoting(req, res, next) {
+export async function voterFraudPrevention(req, res, next) {
   try {
     // check if feast is closed
     const feast = await prisma.feast.findUnique({
@@ -41,7 +41,7 @@ export async function preventMischievousVoting(req, res, next) {
       },
     })
 
-    if (vote) {
+    if (vote.length > 0) {
       return res.status(400).json({
         message: 'You have already voted on this place for this feast',
       })
@@ -49,7 +49,6 @@ export async function preventMischievousVoting(req, res, next) {
 
     next()
   } catch (err) {
-    console.debug(err)
     next(err)
   }
 }

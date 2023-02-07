@@ -169,7 +169,7 @@ export const getFeastPulse = async (req, res, next) => {
         },
       })
 
-      res.status(202).json({ success: true, filteredPlaces: unvotedPlaces })
+      res.status(202).json({ success: true, places: unvotedPlaces })
     }
   } catch (err) {
     console.debug(err)
@@ -183,9 +183,6 @@ export const createFeast = async (req, res, next) => {
   const guests = req.body.guests
   let guestArr = []
   if (guests.length > 0) {
-    // guestArr = guests.map((guest, i) =>
-    //   guest.username ? { username: guest.username } : { username: guests[i] },
-    // )
     guests.forEach((val) => {
       if (val != undefined && val != null) {
         guestArr.push({ username: val.toString() })
@@ -213,17 +210,6 @@ export const createFeast = async (req, res, next) => {
               connect: guestArr,
             }
           : undefined,
-        // guestList: {
-        //   connect: [
-        //     { username: guests[0].toString() },
-        //     { username: guests[1].toString() },
-        //   ],
-        // },
-        // herd: {
-        //   connect: {
-        //     id: req.body.herdId,
-        //   },
-        // },
         // herd: req.body.herdId ? { connect: { id: req.body.herdId } } : null,
       },
       include: {
@@ -235,7 +221,7 @@ export const createFeast = async (req, res, next) => {
     // console.log('req.newFeast: ', { ...feast })
     next()
   } catch (err) {
-    console.log(err)
+    console.debug(err)
     res.status(500).json({
       success: false,
       message: `Could not create new feast: ${err.message}`,
