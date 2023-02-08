@@ -124,7 +124,7 @@ user.get('/feasts', async (req, res) => {
     })
 
     // if a user has no feasts yet, return a response that is still successful so that the client does not think there's an error
-    if (!organizedFeasts || !joinedFeasts) {
+    if (organizedFeasts.length < 1 || joinedFeasts.length < 1) {
       return res.status(200).json({ success: true, feasts: [] })
     }
 
