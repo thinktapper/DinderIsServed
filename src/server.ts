@@ -2,13 +2,9 @@ import express from 'express'
 export const app = express()
 import cors from 'cors'
 import session from 'express-session'
-import { PrismaSessionStore } from '@quixo3/prisma-session-store'
-// import passport from 'passport'
-// import flash from 'connect-flash'
+// import { PrismaSessionStore } from '@quixo3/prisma-session-store'
 import morgan from 'morgan'
-import prisma from './db'
 import { PrismaClient } from '@prisma/client'
-// import mainRoutes from './routes/main'
 import { auth as authRoutes } from './routes/auth'
 import { user as userRoutes } from './routes/user'
 import { place as placeRoutes } from './routes/place'
@@ -17,9 +13,6 @@ import { vote as voteRoutes } from './routes/vote'
 import { feast as feastRoutes } from './routes/feast'
 import { isAuth } from './middleware/isAuth'
 import AppError from './modules/appError'
-
-// // Passport config
-// require('./config/passport')(passport)
 
 declare global {
   namespace Express {
@@ -57,13 +50,6 @@ if (
 //     }),
 //   }),
 // )
-
-// Passport middleware
-// app.use(passport.initialize())
-// app.use(passport.session())
-
-// Use flash messages for errors, info, etc...
-// app.use(flash())
 
 // Routes
 app.use('/', authRoutes)
