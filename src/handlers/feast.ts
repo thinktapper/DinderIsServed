@@ -1,39 +1,40 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, Feast } from '@prisma/client'
 import { request } from 'express'
 import prisma from '../db'
+import AppError from '../modules/appError'
 import { fetchPlaces } from '../modules/fetchPlaces'
 
 // Get all feasts
-export const getHerdFeasts = async (req, res, next) => {
-  try {
-    const herdId = req.params.id
-    const feasts = await prisma.herd.findMany({
-      where: {
-        id: herdId,
-      },
-      include: {
-        feasts: true,
-      },
-    })
-    res.json({ ok: true, data: feasts })
-  } catch (err) {
-    next(err)
-  }
-}
+// export const getHerdFeasts = async (req, res, next) => {
+//   try {
+//     const herdId = req.params.id
+//     const feasts = await prisma.herd.findMany({
+//       where: {
+//         id: herdId,
+//       },
+//       include: {
+//         feasts: true,
+//       },
+//     })
+//     res.json({ ok: true, data: feasts })
+//   } catch (err) {
+//     next(err)
+//   }
+// }
 
 // Get organized feasts
 export const getOrganizedFeasts = async (req, res, next) => {
   try {
-    const user = await prisma.user.findUnique({
+    const organizedFeasts = await prisma.feast.findMany({
       where: {
-        id: req.user.id,
+        organizerId: req.user.id,
       },
       include: {
-        organizedFeasts: true,
+        places: true,
       },
     })
 
-    res.json({ ok: true, data: user.organizedFeasts })
+    res.json({ success: true, organizedFeasts })
   } catch (err) {
     next(err)
   }
@@ -42,95 +43,279 @@ export const getOrganizedFeasts = async (req, res, next) => {
 // Get one feast
 export const getFeast = async (req, res, next) => {
   try {
-    const { id } = req.body
-    const feast = await prisma.feast.findFirst({
+    // const { id } = req.body
+    const feast = await prisma.feast.findUniqueOrThrow({
       where: {
-        id: id,
+        id: req.params.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        closed: true,
+        guestList: true,
+        places: true,
+        voteResults: true,
+        winner: true,
       },
     })
-    res.json({ ok: true, data: feast })
+    res.status(200).json({ success: true, feast })
   } catch (err) {
     next(err)
   }
 }
 
+// Get feast voting status
+export const getFeastPulse = async (req, res, next) => {
+  try {
+    let userNum = 0
+    let placeNum = 0
+    let voteNum = 0
+    let votingFinished = false
+    const now = new Date()
+    // const { id } = req.body
+    const feast = await prisma.feast.findUniqueOrThrow({
+      where: {
+        id: req.params.id,
+      },
+      include: {
+        guestList: true,
+        places: true,
+        voteResults: true,
+      },
+      // select: {
+      //   id: true,
+      //   endDate: true,
+      //   closed: true,
+      //   guestList: true,
+      //   places: true,
+      //   voteResults: true,
+      //   winner: true,
+      // },
+    })
+
+    // const feastVotes = await prisma.vote.count({
+    //   where: {
+    //     feastId: feast.id,
+    //   },
+    // })
+    userNum = feast.guestList.length + 1
+    placeNum = feast.places.length
+    voteNum = feast.voteResults.length
+
+    // voteNum = feastVotes
+    // let expVotes = userNum * 10
+
+    // if (voteNum / expVotes >= 0.65) {
+    //   votingFinished = true
+    // } else
+    console.debug(now, new Date(feast.endDate), now > new Date(feast.endDate))
+
+    // if (
+    //   feast.closed ||
+    //   now > new Date(feast.endDate) ||
+    //   voteNum / expVotes >= 0.65
+    // ) {
+    //   votingFinished = true
+    // }
+    // TODO: update feast with closed: true and calculate winner
+    // if (votingFinished === true) {
+    //   const updatedFeast = await prisma.feast.update({
+    //     where: {
+    //       id: feast.id,
+    //     },
+    //     data: {
+    //       closed: true,
+    //     },
+    //   })
+
+    //   req.closedFeast = updatedFeast
+    //   next()
+    // req.feastPulse = feast
+
+    if (
+      feast.closed ||
+      voteNum >= userNum * placeNum ||
+      now > new Date(feast.endDate)
+    ) {
+      votingFinished = true
+
+      const updatedFeast = await prisma.feast.update({
+        where: {
+          id: feast.id,
+        },
+        data: {
+          closed: true,
+        },
+        include: {
+          places: true,
+          voteResults: true,
+          guestList: true,
+        },
+      })
+
+      req.closedFeast = updatedFeast
+      next()
+    } else {
+      // get feast places that the user has not voted on
+      const unvotedPlaces = await prisma.place.findMany({
+        where: {
+          feastId: req.params.id,
+          votes: {
+            none: {
+              userId: req.user.id,
+            },
+          },
+        },
+      })
+
+      res.status(202).json({ success: true, places: unvotedPlaces })
+    }
+  } catch (err) {
+    console.debug(err)
+    res.status(500).json({ success: false, err })
+    // next(err)
+  }
+}
+
 // Create a feast
 export const createFeast = async (req, res, next) => {
-  // try {
-  type Feast = {
-    id: string
-    name: string
-    location: JSON
-    radius: number
+  const guests = req.body.guests
+  let guestArr = []
+  if (guests.length > 0) {
+    guests.forEach((val) => {
+      if (val != undefined && val != null) {
+        guestArr.push({ username: val.toString() })
+      }
+    })
   }
-  const feast = await prisma.feast
-    .create({
+
+  try {
+    const feast = await prisma.feast.create({
       data: {
         name: req.body.name,
-        startDate: req.body.startDate,
+        image: req.body.image,
+        startDate: req.body.startDate ? req.body.startDate : new Date(),
         endDate: req.body.endDate,
         location: req.body.location,
-        radius: req.body.radius,
+        radius: parseInt(req.body.radius),
         organizer: {
           connect: {
             id: req.user.id,
           },
         },
-        herd: {
-          connect: {
-            id: req.body.herdId,
-          },
-        },
+        guestList: req.body.guests
+          ? {
+              connect: guestArr,
+            }
+          : undefined,
+        // herd: req.body.herdId ? { connect: { id: req.body.herdId } } : null,
+      },
+      include: {
+        guestList: true,
       },
     })
-    .then(async (feast) => {
-      const fetchedPlaces = await fetchPlaces({ feast })
-      // const places = await prisma.place.createMany({
-      //   data: fetchedPlaces,
-      //   skipDuplicates: true,
-      // })
-      res.json({ ok: true, data: { feast, places: fetchedPlaces } })
-    })
-    .catch((err) => {
-      next(err)
-    })
-  // await fetchPlaces(feast)
-  // Create places for the feast
-  // const fetchedPlaces = next(fetchPlaces({ feast }))
-  // res.json({ ok: true, data: feast, fetchedPlaces })
 
-  // next(feast)
-  // } catch (err) {
-  //   console.log(err)
-  //   next(err)
-  // }
+    req.newFeast = feast
+    // console.log('req.newFeast: ', { ...feast })
+    next()
+  } catch (err) {
+    console.debug(err)
+    res.status(500).json({
+      success: false,
+      message: `Could not create new feast: ${err.message}`,
+    })
+    return new AppError(500, `Error creating feast: ${err}`)
+  }
 }
 
 // Update a feast
 export const updateFeast = async (req, res, next) => {
   try {
+    // Get poll data from request body
+    // const { id, formData } = req.body
+    // const { id } = req.params
+
+    // Check if the user is the organizer of the poll
+    const feast = await prisma.feast.findUnique({
+      where: {
+        id: req.params.id,
+      },
+    })
+    if (!feast || feast.organizerId !== req.user.id) {
+      res.status(401).json({ success: false, error: 'Unauthorized' })
+      return
+    }
+
+    // Update the poll
     const updated = await prisma.feast.update({
       where: {
         id: req.params.id,
       },
-      data: req.body,
+      data: { ...req.body },
     })
-    res.json({ ok: true, data: updated })
+
+    res.status(200).json({ success: true, updated })
+    // const updated = await prisma.feast.update({
+    //   where: {
+    //     id: req.params.id,
+    //   },
+    //   data: req.body,
+    // })
+    // res.json({ ok: true, data: updated })
   } catch (err) {
+    console.log(err)
     next(err)
   }
 }
 
 // Delete a feast
 export const deleteFeast = async (req, res, next) => {
+  // try {
+  //   const deleted = await prisma.feast.delete({
+  //     where: {
+  //       id: req.params.id,
+  //     },
+  //   })
+  //   res.json({ ok: true, data: deleted })
+  // } catch (err) {
+  //   next(err)
+  // }
   try {
-    const deleted = await prisma.feast.delete({
-      where: {
-        id: req.params.id,
-      },
-    })
-    res.json({ ok: true, data: deleted })
+    // Get poll ID from request params
+    const { id } = req.params
+
+    // Check if the user is the organizer of the poll
+    const feast = await prisma.feast.findUnique({ where: { id } })
+    if (!feast || feast.organizerId !== req.user.id) {
+      res.status(401).json({ success: false, error: 'Unauthorized' })
+      return
+    }
+
+    // Delete the poll
+    await prisma.feast.delete({ where: { id } })
+
+    res.status(204).json({ success: true })
+    // const feast = await prisma.feast.findFirst({
+    //   where: {
+    //     id: req.body.feastId,
+    //   },
+    //   include: {
+    //     organizer: true,
+    //   },
+    // })
+    // if (feast.organizer !== req.user.id) {
+    //   return res.status(401).json({ success: false, message: 'Unauthorized' })
+    // }
+
+    // const deleted = await prisma.feast.delete({
+    //   where: {
+    //     id: req.body.feastId,
+    //   },
+    // })
+    // res.status(200).json({ success: true, deleted })
   } catch (err) {
+    console.log(err)
     next(err)
   }
 }

@@ -1,38 +1,30 @@
 import axios from 'axios'
 import prisma from '../db'
 import type { Request, Response, NextFunction } from 'express'
-import type { Place, Prisma } from '@prisma/client'
+import type { Place, Prisma, Feast, User } from '@prisma/client'
 
 const GOOGLE_API = process.env.GOOGLE_API
 
-// type Place = {
-//   name: string
-//   googleId: string
-//   price?: string
-//   description?: string
-//   rating?: string
-//   ratingsTotal?: string
-//   stars?: string
-//   photos: string[]
-// }
-// type Feast = {
-//   id: string
-//   name: string
-//   location: Prisma.JsonObject
-//   radius: number
-// }
+export interface NewFeastRequest extends Request {
+  // user: User,
+  newFeast: any
+}
 
-export const fetchPlaces = async ({ feast }) => {
+export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
+  const feast = req.newFeast
   const { location, radius } = feast
   const feastId = feast.id
   const { lat, long } = location
   const distance = radius * 1609.34
   const googlePlacesBaseUrl = 'https://maps.googleapis.com/maps/api/place'
-  const searchUrl = `${googlePlacesBaseUrl}/textsearch/json?query=restaurants&locationbias=circle%3A${distance}%40${lat}%2C${long}&key=${GOOGLE_API}`
+  // const searchUrl = `${googlePlacesBaseUrl}/textsearch/json?query=restaurants&locationbias=circle%3A${distance}%40${lat}%2C${long}&key=${GOOGLE_API}`
+  const searchUrl = `${googlePlacesBaseUrl}/nearbysearch/json?location=${lat}%2C${long}&radius=${distance}&type=restaurant&keyword=food&key=${GOOGLE_API}`
   const fields =
     'name,place_id,rating,user_ratings_total,price_level,photos,editorial_summary'
   const extraFields =
     'opening_hours,formatted_address,formatted_phone_number,website'
+
+  const feastPlaces = []
 
   // fetch data from Google Maps API
   try {
@@ -87,22 +79,32 @@ export const fetchPlaces = async ({ feast }) => {
         // Transform rating to stars
         let starRating = ''
         if (googlePlace.rating) {
+          googlePlace.rating?.toString()
+
           for (let i = 0; i < googlePlace.rating; i++) {
             starRating += '★'
           }
         }
+
+        // stringify
+        pl = pl?.toString()
+        let strRating = googlePlace.rating.toString() || 'No ratings'
+        let user_ratings_total =
+          googlePlace.user_ratings_total?.toString() || 'N/A'
+        starRating = starRating?.toString()
+
         let place = {
           googleId: googlePlace.place_id,
           name: googlePlace.name,
-          price: pl.toString(),
-          rating: googlePlace.rating.toString() || 'No ratings',
-          ratingsTotal: googlePlace.user_ratings_total.toString() || 'N/A',
-          stars: starRating.toString(),
+          price: pl,
+          rating: strRating,
+          ratingsTotal: user_ratings_total,
+          stars: starRating,
           photos: gallery,
           description: summary,
         }
 
-        await prisma.place.create({
+        let newPlace = await prisma.place.create({
           data: {
             ...place,
             feast: {
@@ -131,15 +133,36 @@ export const fetchPlaces = async ({ feast }) => {
         //   },
         // })
 
+        feastPlaces.push(newPlace)
         fetchedPlaces.push(place)
       })
-      return fetchedPlaces
 
-      // res.status(200).json({ data: feast, places: fetchedPlaces })
+      const feast = await prisma.feast.findFirst({
+        where: {
+          id: feastId,
+        },
+        include: {
+          guestList: true,
+          places: true,
+        },
+      })
+
+      // const places = await prisma.place.createMany()
+      console.log(feast)
+
+      res.status(200).json({
+        success: true,
+        data: { feast: { ...feast } },
+      })
+      // return fetchedPlaces
     }
   } catch (error) {
-    console.error(`Error fetching places from Google: ${error}`)
+    console.log(`Error fetching places from Google: ${error}`)
     // next(error)
-    throw new Error(error)
+    // throw new Error(error)
+    res.status(405).json({
+      success: false,
+      message: `Could not fetch place details from google: ${error.message}`,
+    })
   }
 }

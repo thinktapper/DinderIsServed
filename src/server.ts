@@ -1,24 +1,20 @@
 import express from 'express'
 export const app = express()
 import cors from 'cors'
+import { rateLimit } from 'express-rate-limit'
 import session from 'express-session'
 import { PrismaSessionStore } from '@quixo3/prisma-session-store'
-// import passport from 'passport'
-// import flash from 'connect-flash'
 import morgan from 'morgan'
 import prisma from './db'
 import { PrismaClient } from '@prisma/client'
-// import mainRoutes from './routes/main'
 import { auth as authRoutes } from './routes/auth'
 import { user as userRoutes } from './routes/user'
 import { place as placeRoutes } from './routes/place'
 import { vote as voteRoutes } from './routes/vote'
-import { herd as herdRoutes } from './routes/herd'
+// import { herd as herdRoutes } from './routes/herd'
 import { feast as feastRoutes } from './routes/feast'
 import { isAuth } from './middleware/isAuth'
-
-// // Passport config
-// require('./config/passport')(passport)
+import AppError from './modules/appError'
 
 declare global {
   namespace Express {
@@ -28,17 +24,26 @@ declare global {
   }
 }
 
-app.use(cors())
+app.use(cors({ credentials: true }))
+
+// set up rate limiter: maximum of 5 requests per minute
+app.use(
+  rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 5, // limit each IP to 5 requests per windowMs
+  }),
+)
 
 // Body parsing to allow nested objects. & set the responses to only be parsed as JSON
-app.use(express.urlencoded({ extended: true }), express.json())
+// app.use(express.urlencoded({ extended: true }), express.json())
+app.use(express.json())
 
 // Logging
 if (
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'staging'
 ) {
-  app.use(morgan('dev'))
+  app.use(morgan('tiny'))
 }
 
 // app.use(
@@ -56,20 +61,29 @@ if (
 //   }),
 // )
 
-// Passport middleware
-// app.use(passport.initialize())
-// app.use(passport.session())
-
-// Use flash messages for errors, info, etc...
-// app.use(flash())
-
 // Routes
 app.use('/', authRoutes)
 app.use('/api/user', isAuth, userRoutes)
-app.use('/api/herd', isAuth, herdRoutes)
+// app.use('/api/herd', isAuth, herdRoutes)
 app.use('/api/feast', isAuth, feastRoutes)
 app.use('/api/place', isAuth, placeRoutes)
 app.use('/api/vote', isAuth, voteRoutes)
+
+// UNHANDLED ROUTES
+app.all('*', (req, res, next) => {
+  next(new AppError(404, `Route ${req.originalUrl} not found`))
+})
+
+// GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  err.status = err.status || 'error'
+  err.statusCode = err.statusCode || 500
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  })
+})
 
 // app.use((err, req: Request, res: Response, next: NextFunction) => {
 //   if (err.type === 'auth') {
