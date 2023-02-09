@@ -189,7 +189,6 @@ export const createFeast = async (req, res, next) => {
       }
     })
   }
-  console.debug(guests, guestArr)
 
   try {
     const feast = await prisma.feast.create({

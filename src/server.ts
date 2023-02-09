@@ -1,6 +1,7 @@
 import express from 'express'
 export const app = express()
 import cors from 'cors'
+import { rateLimit } from 'express-rate-limit'
 import session from 'express-session'
 import { PrismaSessionStore } from '@quixo3/prisma-session-store'
 import morgan from 'morgan'
@@ -24,6 +25,14 @@ declare global {
 }
 
 app.use(cors({ credentials: true }))
+
+// set up rate limiter: maximum of 5 requests per minute
+app.use(
+  rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 5, // limit each IP to 5 requests per windowMs
+  }),
+)
 
 // Body parsing to allow nested objects. & set the responses to only be parsed as JSON
 // app.use(express.urlencoded({ extended: true }), express.json())
