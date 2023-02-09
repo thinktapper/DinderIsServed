@@ -64,9 +64,18 @@ user.get('/all', async (req, res) => {
 
     const users = await prisma.user.findMany({
       where: {
-        image: {
-          not: null,
-        },
+        AND: [
+          {
+            image: {
+              not: null,
+            },
+          },
+          {
+            username: {
+              not: 'admin',
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -124,7 +133,7 @@ user.get('/feasts', async (req, res) => {
     })
 
     // if a user has no feasts yet, return a response that is still successful so that the client does not think there's an error
-    if (organizedFeasts.length < 1 || joinedFeasts.length < 1) {
+    if (organizedFeasts.length < 1 && joinedFeasts.length < 1) {
       return res.status(200).json({ success: true, feasts: [] })
     }
 
