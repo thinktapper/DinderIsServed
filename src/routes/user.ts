@@ -8,20 +8,6 @@ import AppError from '../modules/appError'
 export const user = Router()
 
 user.get('/me', async (req, res) => {
-  // const { userID } = req.body
-
-  // if (!userID) {
-  //   return res.json({ success: false, error: 'Missing credentials' })
-  // }
-
-  // const user = await prisma.user.findFirst({
-  //   where: {
-  //     id: userID,
-  //   },
-  //   select: {
-  //     sessionID: true,
-  //   },
-  // })
   try {
     const id = req.user!.id
     if (!id) {
@@ -45,12 +31,6 @@ user.get('/me', async (req, res) => {
       .status(500)
       .json({ success: false, message: `could not get user data: ${err}` })
   }
-
-  // if (!user) {
-  //   return res.json({ success: false, error: 'Invalid credentials' })
-  // }
-
-  // return res.json({ success: true, sessionID: user.sessionID })
 })
 
 user.get('/all', async (req, res) => {
@@ -149,26 +129,6 @@ user.get('/feasts', async (req, res) => {
         `ERROR getting all users feasts -> gathered feasts array: ${newLocal}`,
       )
     }
-    // const feasts = await prisma.feast.findMany({
-    //   where: {
-    //       guestList: {
-    //         some: {
-    //           id: req.user!.id,
-    //         },
-    //       },
-    //     },
-    //   },
-    // })
-    // let feastsArr = Object.values({ ...feasts })
-    // feastsArr = feastsArr.flat()
-
-    // let feasts = await prisma.user
-    //   .findUnique({ where: { id: req.user!.id } })
-    //   .feasts({
-    //     where: {
-    //       OR: [{ organizerId: req.user.id }, { join_some: { userId: userId } }],
-    //     },
-    //   })
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -177,91 +137,8 @@ user.get('/feasts', async (req, res) => {
   }
 })
 
-// user.put('/update', async (req, res, next) => {
-//   // const newUserData = { ...req.body }
-//   // console.log(
-//   //   `attempting to update user ${req.user} with ${JSON.stringify(req.body)}`,
-//   // )
-//   try {
-//     let updatedUser
-//     if (req.body.username) {
-//       const existing = await prisma.user.findFirst({
-//         where: {
-//           username: req.body.username,
-//         },
-//       })
-//       if (existing && req.user!.username !== req.body.username) {
-//         return res
-//           .status(401)
-//           .json({ status: 'fail', message: 'username is already taken' })
-//       }
-
-//       updatedUser = await prisma.user.update({
-//         where: {
-//           id: req.user!.id,
-//         },
-//         data: {
-//           username: req.body.username,
-//         },
-//       })
-//     }
-
-//     if (req.body.email) {
-//       const existing = await prisma.user.findFirst({
-//         where: {
-//           email: req.body.email,
-//         },
-//       })
-//       if (existing && req.user!.email !== req.body.email) {
-//         return res
-//           .status(401)
-//           .json({ status: 'fail', message: 'email is already taken' })
-//       }
-
-//       updatedUser = await prisma.user.update({
-//         where: {
-//           id: req.user!.id,
-//         },
-//         data: {
-//           email: req.body.email,
-//         },
-//       })
-//     }
-
-//     // const updatedUser = await prisma.user.update({
-//     //   where: {
-//     //     id: req.user!.id,
-//     //   },
-//     //   data: req.body,
-//     // })
-
-//     if (!updatedUser) {
-//       // return next(new AppError(400, 'could not update user'))
-//       res
-//         .status(500)
-//         .json({ success: false, message: `could not update user: ${req.user}` })
-//     }
-
-//     const user = removePasswordAddToken(updatedUser)
-//     return res.status(200).json({ status: 'success', user })
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ success: false, message: `could not update user: ${err}` })
-//     return next(new AppError(401, `could not update user: ${err}`))
-//   }
-// })
-
 user.put('/update', async (req, res) => {
   try {
-    // const { id } = req.params
-    // const { patch } = req.body
-    // if (!patch) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: 'this endpoint requires a patch in the body' })
-    // }
-
     const updatedUser = await prisma.user.update({
       where: {
         id: req.user!.id,

@@ -81,6 +81,7 @@ auth.post('/login', async (req, res) => {
     },
   })
 
+
   if (!oldUser) {
     return res.json({ success: false, error: 'Invalid credentials' })
   }
@@ -114,6 +115,7 @@ auth.post('/login', async (req, res) => {
 auth.get('/refresh', isAuth, async (req, res) => {
   const { userID, sessionID } = req.params
 
+
   const oldUser = await prisma.user.findFirst({
     where: {
       id: userID,
@@ -142,12 +144,6 @@ auth.get('/refresh', isAuth, async (req, res) => {
     },
   })
 
-  // const accessToken = jwt.sign(
-  //   { userID: user.id, sessionID: newSessionID },
-  //   process.env.SECRET,
-  // )
-
-  // return res.json({ success: true, accessToken: accessToken })
   const user = removePasswordAddToken(refreshedUser)
   return res.status(200).json({ success: true, user })
 })
