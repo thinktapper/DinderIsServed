@@ -79,7 +79,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
         // Transform rating to stars
         let starRating = ''
         if (googlePlace.rating) {
-          googlePlace.rating.toString()
+          googlePlace.rating?.toString()
 
           for (let i = 0; i < googlePlace.rating; i++) {
             starRating += '★'
@@ -87,7 +87,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
         }
 
         // stringify
-        pl = pl.toString()
+        pl = pl?.toString()
         let strRating = googlePlace.rating.toString() || 'No ratings'
         let user_ratings_total =
           googlePlace.user_ratings_total?.toString() || 'N/A'
