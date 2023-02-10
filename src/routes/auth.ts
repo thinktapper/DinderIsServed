@@ -13,7 +13,7 @@ const salt = bcrypt.genSaltSync(10)
 type CleanUser = Omit<User, 'password'>
 
 export function removePasswordAddToken(
-  user: User,
+  user: User
 ): CleanUser & { token: string } {
   const { password, ...cleanUser } = user
 
@@ -23,6 +23,10 @@ export function removePasswordAddToken(
   // return user with token
   return { ...cleanUser, token }
 }
+
+auth.get('/', (req, res, next) => {
+  res.json({ message: 'nope' })
+})
 
 auth.post('/signup', async (req, res) => {
   try {
@@ -81,7 +85,6 @@ auth.post('/login', async (req, res) => {
     },
   })
 
-
   if (!oldUser) {
     return res.json({ success: false, error: 'Invalid credentials' })
   }
@@ -114,7 +117,6 @@ auth.post('/login', async (req, res) => {
 
 auth.get('/refresh', isAuth, async (req, res) => {
   const { userID, sessionID } = req.params
-
 
   const oldUser = await prisma.user.findFirst({
     where: {
