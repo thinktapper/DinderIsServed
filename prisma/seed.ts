@@ -24,10 +24,10 @@ async function main() {
   // Delete all existing data
   await prisma.session.deleteMany({})
   await prisma.vote.deleteMany({})
-  await prisma.herdMembership.deleteMany({})
+  // await prisma.herdMembership.deleteMany({})
   await prisma.feast.deleteMany({})
   await prisma.user.deleteMany({})
-  await prisma.herd.deleteMany({})
+  // await prisma.herd.deleteMany({})
 
   // Create users
   const grace = await prisma.user.create({
@@ -39,57 +39,57 @@ async function main() {
   })
 
   // Create herds
-  const course = await prisma.herd.create({
-    data: {
-      name: 'CRUD with Prisma',
-      members: {
-        create: {
-          role: 'SHEPHERD',
-          user: {
-            connect: {
-              email: grace.email,
-            },
-          },
-        },
-      },
-    },
-    include: {
-      members: true,
-    },
-  })
+  // const course = await prisma.herd.create({
+  //   data: {
+  //     name: 'CRUD with Prisma',
+  //     members: {
+  //       create: {
+  //         role: 'SHEPHERD',
+  //         user: {
+  //           connect: {
+  //             email: grace.email,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   include: {
+  //     members: true,
+  //   },
+  // })
 
-  const meetup = await prisma.herd.create({
-    data: {
-      name: 'Prisma Meetup',
-      members: {
-        create: {
-          role: 'SHEPHERD',
-          user: {
-            connect: {
-              email: grace.email,
-            },
-          },
-        },
-      },
-    },
-    include: {
-      members: true,
-    },
-  })
+  // const meetup = await prisma.herd.create({
+  //   data: {
+  //     name: 'Prisma Meetup',
+  //     members: {
+  //       create: {
+  //         role: 'SHEPHERD',
+  //         user: {
+  //           connect: {
+  //             email: grace.email,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   include: {
+  //     members: true,
+  //   },
+  // })
 
   const david = await prisma.user.create({
     data: {
       email: 'david@prisma.io',
       username: 'Deutsch',
       password: 'password123',
-      herds: {
-        create: {
-          role: 'MEMBER',
-          herd: {
-            connect: { id: course.id },
-          },
-        },
-      },
+      //   herds: {
+      //     create: {
+      //       role: 'MEMBER',
+      //       herd: {
+      //         connect: { id: course.id },
+      //       },
+      //     },
+      //   },
     },
   })
 
@@ -98,14 +98,14 @@ async function main() {
       email: 'devi@prisma.io',
       username: 'Shakuntala',
       password: 'password1',
-      herds: {
-        create: {
-          role: 'MEMBER',
-          herd: {
-            connect: { id: meetup.id },
-          },
-        },
-      },
+      // herds: {
+      //   create: {
+      //     role: 'MEMBER',
+      //     herd: {
+      //       connect: { id: meetup.id },
+      //     },
+      //   },
+      // },
     },
   })
   // Create feasts
@@ -120,11 +120,11 @@ async function main() {
       startDate: new Date(),
       endDate: weekFromNow,
       name: 'First feast',
-      herd: {
-        connect: {
-          id: course.id,
-        },
-      },
+      // herd: {
+      //   connect: {
+      //     id: course.id,
+      //   },
+      // },
       organizer: {
         connect: {
           id: david.id,
@@ -140,11 +140,11 @@ async function main() {
       startDate: weekFromNow,
       endDate: twoWeekFromNow,
       name: 'Second test',
-      herd: {
-        connect: {
-          id: course.id,
-        },
-      },
+      // herd: {
+      //   connect: {
+      //     id: course.id,
+      //   },
+      // },
       organizer: {
         connect: {
           id: shakuntala.id,
@@ -160,11 +160,11 @@ async function main() {
       startDate: new Date(),
       endDate: monthFromNow,
       name: 'Final exam',
-      herd: {
-        connect: {
-          id: meetup.id,
-        },
-      },
+      // herd: {
+      //   connect: {
+      //     id: meetup.id,
+      //   },
+      // },
       organizer: {
         connect: {
           id: grace.id,
@@ -180,11 +180,11 @@ async function main() {
       startDate: new Date(),
       endDate: monthFromNow,
       name: 'Prisma Meetup',
-      herd: {
-        connect: {
-          id: meetup.id,
-        },
-      },
+      // herd: {
+      //   connect: {
+      //     id: meetup.id,
+      //   },
+      // },
       organizer: {
         connect: {
           id: grace.id,
