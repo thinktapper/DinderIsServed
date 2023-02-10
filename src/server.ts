@@ -61,6 +61,14 @@ if (
 //   }),
 // )
 
+// add a health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'Dinder is served 🔥🫃',
+  })
+})
+
 // Routes
 app.use('/', authRoutes)
 app.use('/api/user', isAuth, userRoutes)
@@ -68,14 +76,6 @@ app.use('/api/user', isAuth, userRoutes)
 app.use('/api/feast', isAuth, feastRoutes)
 app.use('/api/place', isAuth, placeRoutes)
 app.use('/api/vote', isAuth, voteRoutes)
-
-// Testing
-app.get('/api/healthchecker', (_, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Dinder is served 🔥🫃',
-  })
-})
 
 // UNHANDLED ROUTES
 app.all('*', (req, res, next) => {
