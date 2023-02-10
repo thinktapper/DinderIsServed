@@ -31,7 +31,7 @@ app.use(
   rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 5, // limit each IP to 5 requests per windowMs
-  }),
+  })
 )
 
 // Body parsing to allow nested objects. & set the responses to only be parsed as JSON
@@ -68,6 +68,14 @@ app.use('/api/user', isAuth, userRoutes)
 app.use('/api/feast', isAuth, feastRoutes)
 app.use('/api/place', isAuth, placeRoutes)
 app.use('/api/vote', isAuth, voteRoutes)
+
+// Testing
+app.get('/api/healthchecker', (_, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Dinder is served 🔥🫃',
+  })
+})
 
 // UNHANDLED ROUTES
 app.all('*', (req, res, next) => {
