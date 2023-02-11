@@ -20,7 +20,7 @@ if (stage === 'production') {
 const defaultConfig = {
   stage,
   env: process.env.NODE_ENV,
-  port: 3000,
+  port: process.env.PORT || 3000,
   secrets: {
     jwt: process.env.JWT_SECRET,
     dbUrl: process.env.DATABASE_URL,

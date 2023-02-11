@@ -43,7 +43,7 @@ if (
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'staging'
 ) {
-  app.use(morgan('tiny'))
+  app.use(morgan('dev'))
 }
 
 // app.use(

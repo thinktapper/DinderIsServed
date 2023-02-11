@@ -34,6 +34,8 @@ async function main() {
     data: {
       email: 'grace@hey.com',
       username: 'grace',
+      image:
+        'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/234.jpg',
       password: 'password',
     },
   })
@@ -81,15 +83,16 @@ async function main() {
     data: {
       email: 'david@prisma.io',
       username: 'Deutsch',
+      image: 'https://bit.ly/dan-abramov',
       password: 'password123',
-      //   herds: {
-      //     create: {
-      //       role: 'MEMBER',
-      //       herd: {
-      //         connect: { id: course.id },
-      //       },
+      // herds: {
+      //   create: {
+      //     role: 'MEMBER',
+      //     herd: {
+      //       connect: { id: course.id },
       //     },
       //   },
+      // },
     },
   })
 
@@ -97,6 +100,7 @@ async function main() {
     data: {
       email: 'devi@prisma.io',
       username: 'Shakuntala',
+      image: 'https://loremflickr.com/640/480',
       password: 'password1',
       // herds: {
       //   create: {
