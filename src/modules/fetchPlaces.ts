@@ -33,6 +33,8 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
     // const data = await res.json()
     const { status, results } = data
 
+    console.log('status: ', status, 'results: ', JSON.stringify(results))
+
     let arrPlaceDetails = []
     if (status === 'OK') {
       let fetchedPlaces = []
