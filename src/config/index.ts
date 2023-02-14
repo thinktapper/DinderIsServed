@@ -27,7 +27,7 @@ const defaultConfig = {
     RENDER_DB_URL: process.env.RENDER_DB_URL,
     GOOGLE_API: process.env.GOOGLE_API,
   },
-  logging: false,
+  logging: true,
 }
 
 export default merge(defaultConfig, envConfig)
