@@ -11,6 +11,7 @@ export interface NewFeastRequest extends Request {
 }
 
 export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
+  console.log('fetchPlaces called')
   const feast = req.newFeast
   const { location, radius } = feast
   const feastId = feast.id
@@ -48,8 +49,8 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
       results.forEach((result: { place_id: any }) => {
         arrPlaceDetails.push(
           axios.get(
-            `${googlePlacesBaseUrl}/details/json?place_id=${result.place_id}&fields=${fields}&key=${GOOGLE_API}`,
-          ),
+            `${googlePlacesBaseUrl}/details/json?place_id=${result.place_id}&fields=${fields}&key=${GOOGLE_API}`
+          )
         )
       })
 
@@ -62,7 +63,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
         // let place = {}
         let gallery = await googlePlace.photos?.map(
           (photo) =>
-            `${googlePlacesBaseUrl}/photo?maxwidth=600&photoreference=${photo.photo_reference}&key=${GOOGLE_API}`,
+            `${googlePlacesBaseUrl}/photo?maxwidth=600&photoreference=${photo.photo_reference}&key=${GOOGLE_API}`
         )
         let summary = googlePlace.editorial_summary
           ? googlePlace.editorial_summary.overview

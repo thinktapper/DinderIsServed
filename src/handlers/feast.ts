@@ -217,7 +217,7 @@ export const createFeast = async (req, res, next) => {
     })
 
     req.newFeast = feast
-    // console.log('req.newFeast: ', { ...feast })
+    console.log('req.newFeast: ', { ...feast })
     next()
   } catch (err) {
     console.debug(err)
