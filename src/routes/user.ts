@@ -123,16 +123,16 @@ user.get('/feasts', async (req, res) => {
     const closedFeasts = feasts.filter((feast) => feast.closed)
     const openFeasts = feasts.filter((feast) => !feast.closed)
 
-    closedFeasts.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
     openFeasts.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
+    closedFeasts.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
 
-    const sortedFeasts = [...closedFeasts, ...openFeasts]
+    const sortedFeasts = [...openFeasts, ...closedFeasts]
 
     // sort feasts by start date in descending order
     // feasts.sort(
@@ -143,10 +143,10 @@ user.get('/feasts', async (req, res) => {
     // const feasts = organizedFeasts.concat(...joinedFeasts)
 
     if (feasts.length > 0) {
-      return res.status(200).json({ success: true, feasts })
+      return res.status(200).json({ success: true, sortedFeasts })
     } else {
       throw new Error(
-        `ERROR getting all users feasts -> gathered feasts array: ${feasts}`
+        `ERROR getting all users feasts -> gathered feasts array: ${sortedFeasts}`
       )
     }
   } catch (err) {
