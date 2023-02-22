@@ -151,7 +151,7 @@ export const fetchPlaces = async (req: NewFeastRequest, res: Response) => {
       })
 
       // const places = await prisma.place.createMany()
-      console.log(feast)
+      // console.log(feast)
 
       res.status(200).json({
         success: true,

@@ -118,21 +118,40 @@ user.get('/feasts', async (req, res) => {
     }
 
     let feasts = [...organizedFeasts, ...joinedFeasts]
-    feasts.flatMap((feast) => feast)
+
+    // sort feasts by start date in descending order and group them by open/closed status
+    const closedFeasts = feasts.filter((feast) => feast.closed)
+    const openFeasts = feasts.filter((feast) => !feast.closed)
+
+    closedFeasts.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+    openFeasts.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+
+    const sortedFeasts = [...closedFeasts, ...openFeasts]
+
+    // sort feasts by start date in descending order
+    // feasts.sort(
+    //   (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+    // )
+
+    // feasts.flatMap((feast) => feast)
     // const feasts = organizedFeasts.concat(...joinedFeasts)
 
     if (feasts.length > 0) {
       return res.status(200).json({ success: true, feasts })
     } else {
-      const newLocal = { ...feasts }
       throw new Error(
-        `ERROR getting all users feasts -> gathered feasts array: ${newLocal}`,
+        `ERROR getting all users feasts -> gathered feasts array: ${feasts}`
       )
     }
   } catch (err) {
+    console.error(`Error getting all users feasts: ${err}`)
     return res.status(500).json({
       success: false,
-      message: `could not get feasts for id ${req.user?.id}: ${err.message}`,
+      message: `could not get feasts for id ${req.user?.username}: Server error`,
     })
   }
 })

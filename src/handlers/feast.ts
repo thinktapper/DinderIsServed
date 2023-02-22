@@ -217,7 +217,7 @@ export const createFeast = async (req, res, next) => {
     })
 
     req.newFeast = feast
-    console.log('req.newFeast: ', { ...feast })
+    // console.log('req.newFeast: ', { ...feast })
     // req.setTimeout(500000)
     next()
   } catch (err) {
