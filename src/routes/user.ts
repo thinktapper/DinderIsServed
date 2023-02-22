@@ -124,10 +124,12 @@ user.get('/feasts', async (req, res) => {
     const openFeasts = feasts.filter((feast) => !feast.closed)
 
     closedFeasts.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
     openFeasts.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
 
     const sortedFeasts = [...closedFeasts, ...openFeasts]
