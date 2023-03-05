@@ -1,10 +1,16 @@
 ![Dinder Is Served](https://user-images.githubusercontent.com/10656909/222941835-a6be6252-c3bb-47ce-b49d-63a50e305395.svg)
-# Dinder Is Served 🍽️
 
-Dinder REST API 🧌
-Write a short sentence or two about this project and what it does. Be sure to include a link and a screenshot (we're front end devs so we can actually see our work!).
+<h1 align='center'> Dinder Is Served 🍽️</h1>
+
+Going out to eat with friends is a great way to catch up and enjoy each other's company. But it can be a hassle to find a place that everyone likes. This is the backend for Dinder: an app that helps you find a place that everyone agrees on.
 
 **Link to project:** https://github.com/thinktapper/DinderRN
+
+<details name='screenshots'>
+<summary>Screenshots</summary>
+
+</details>
+<br>
 
 ## How It's Made:
 
