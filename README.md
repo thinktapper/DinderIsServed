@@ -12,6 +12,7 @@
 <a href='#summary'>Summary</a> •
 <a href='#author'>Author</a>
 </p>
+<br />
 
 🚀 **Live project:** <a href='https://dinder-is-served-init.onrender.com/health'>Dinder Is Served</a>
 
@@ -26,7 +27,7 @@
     <img src='https://user-images.githubusercontent.com/10656909/222942962-73635777-2d89-4cad-aae7-41b3d4bbe25b.png' alt='' width='128'>
     <img src='https://user-images.githubusercontent.com/10656909/222942965-4bf6c1e5-a7ec-4f5f-ac0d-3d55cc06b60d.png' alt='' width='128'>
 </details>
-<!-- <br> -->
+<br />
 
 ## 🧑‍🔬 How It's Made
 
@@ -42,6 +43,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 - [![TypeScript][typescript]][typescript-url]
 - [![PostgreSQL][postgresql]][postgresql-url]
 - [![GoogleMaps][googlemaps]][googlemaps-url]
+  <br />
 
 ## 🏗️ Usage
 
@@ -81,6 +83,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
    ```
 
    The server will be running on `localhost:3000`
+   <br />
 
 ## 🏋️‍♂️ Optimizations
 
@@ -96,6 +99,7 @@ With time, I plan to add the following features:
 - [ ] Add more detailed documentation for the API endpoints.
 
 See the [open issues](https://github.com/thinktapper/DinderIsServed/issues) for a full list of proposed features (and known issues).
+<br />
 
 ## 📝 Summary
 
