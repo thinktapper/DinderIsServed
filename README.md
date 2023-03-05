@@ -32,7 +32,7 @@
 
 Designed and built from scratch using the Node.js runtime & Express.js for handling routes and creating <a href='https://github.com/thinktapper/DinderRN'>Dinder's</a> API endpoints in TypeScript. Users are able to create accounts and log in, update profile information and create location-based feasts containing restaurants tailored to their occasion. Real-time establishment data is sourced from Google Maps and are stored alongside user votes in a PostgreSQL database. Prisma is used as a typesafe ORM to create schemas, query the DB, and handle migrations. I created authentication middleware to protect the API using JWTs. The server and hosted DB are deployed on [Render](https://render.com/).
 
-### 🛠️ Built With
+### Built With
 
 <!-- - [![JWT][jwt]][jwt-url] -->
 
@@ -47,7 +47,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 
 1. **Clone the repository**
 
-   Via HTTPS: `git clone https://github.com/thinktapper/DinderIsServed.git`
+   `git clone https://github.com/thinktapper/DinderIsServed.git`
 
 2. **Install the necessary packages**
 
@@ -64,6 +64,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 
    ```sh
    DATABASE_URL="postgresql://<username>:<password>@localhost:5432/<database>?schema=public"
+   SECRET="<your-jwt-secret>"
    GOOGLE_API="<your-google-maps-api-key>"
    ```
 
@@ -98,7 +99,20 @@ See the [open issues](https://github.com/thinktapper/DinderIsServed/issues) for 
 
 ## 📝 Summary
 
-This project was a great way to learn more about the backend and how to create a RESTful API. I learned a lot about authentication and authorization, and how to create a secure API. I also learned a lot about how to use Prisma as an ORM and how to use it to create schemas, query the database, and handle migrations. I also learned a lot about how to use TypeScript with Node.js and Express.js.
+This project was a great way to learn more about the backend and how to create a Node + Express REST API server in TypeScript. I learned a lot about authentication & authorization by rolling my own middleware, and how to deploy a secure API.
+
+### 📚 Key learning points:
+
+<ul>
+  <li>Strengthened skills needed to plan, scope, research, and deploy an API.</li>
+  <li>Learned how to use JWTs to authenticate users and protect routes.</li>
+  <li>Practiced creating middleware to protect voting integrity amongst users.</li>
+  <li>Practiced using Prisma to generate relational database models and interact with the DB.</li>
+  <li>Learned out to create a seed script to populate the database with mock data.</li>
+  <li>Learned how to use the Google Maps API to fetch real-time restaurant data.</li>
+  <li>Learned how to set up continuous deployment with CI.</li>
+  <li>Gained experience debugging and troubleshooting TypeScript and ESLint build errors and deployment issues.</li>
+</ul>
 
 ## 👨‍💻 Author
 
