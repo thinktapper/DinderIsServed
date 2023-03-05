@@ -13,7 +13,7 @@
 <a href='#author'>Author</a>
 </p>
 
-**Live project:** <a href='https://dinder-is-served-init.onrender.com/health'>Dinder Is Served</a>
+🚀 **Live project:** <a href='https://dinder-is-served-init.onrender.com/health'>Dinder Is Served</a>
 
 ### Screenshots
 
@@ -32,7 +32,7 @@
 
 Designed and built from scratch using the Node.js runtime & Express.js for handling routes and creating <a href='https://github.com/thinktapper/DinderRN'>Dinder's</a> API endpoints in TypeScript. Users are able to create accounts and log in, update profile information and create location-based feasts containing restaurants tailored to their occasion. Real-time establishment data is sourced from Google Maps and are stored alongside user votes in a PostgreSQL database. Prisma is used as a typesafe ORM to create schemas, query the DB, and handle migrations. I created authentication middleware to protect the API using JWTs. The server and hosted DB are deployed on [Render](https://render.com/).
 
-### Built With
+### Built With:
 
 <!-- - [![JWT][jwt]][jwt-url] -->
 
@@ -43,7 +43,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 - [![PostgreSQL][postgresql]][postgresql-url]
 - [![GoogleMaps][googlemaps]][googlemaps-url]
 
-## 🚀 Usage
+## 🏗️ Usage
 
 1. **Clone the repository**
 
@@ -86,7 +86,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 
 With time, I plan to add the following features:
 
-- [ x ] Implement rate limiting to prevent brute force attacks
+- [x] Implement rate limiting to prevent brute force attacks
 - [ ] Resolve security vulnerabilities in dependencies
 - [ ] Add feature for users to create groups of friends/family members called **Herds**
 - [ ] Create sharable links for inviting other users (registered or not) to join Herds
@@ -101,7 +101,7 @@ See the [open issues](https://github.com/thinktapper/DinderIsServed/issues) for 
 
 This project was a great way to learn more about the backend and how to create a Node + Express REST API server in TypeScript. I learned a lot about authentication & authorization by rolling my own middleware, and how to deploy a secure API.
 
-### 📚 Key learning points:
+### Key takeaways:
 
 <ul>
   <li>Strengthened skills needed to plan, scope, research, and deploy an API.</li>
