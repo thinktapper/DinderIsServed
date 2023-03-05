@@ -8,7 +8,13 @@ Going out to eat with friends is a great way to catch up and enjoy each other's 
 
 <details name='screenshots'>
 <summary>Screenshots</summary>
-
+![signin](https://user-images.githubusercontent.com/10656909/222942913-bb4eef89-61e1-424b-b26d-7e4a1f5f2554.png)
+![nofeasts](https://user-images.githubusercontent.com/10656909/222942538-4085f9ba-2f1e-4077-9228-34ae9edc74d2.png)
+![createnew](https://user-images.githubusercontent.com/10656909/222942889-336a796b-3730-4530-bcdf-f55a920c057b.png)
+![feastscreen](https://user-images.githubusercontent.com/10656909/222942931-42860e6b-625a-4ebf-a432-b61f3d37ad01.png)
+![swipedeck](https://user-images.githubusercontent.com/10656909/222942957-b218210d-428b-4147-bbe6-70de11c16c10.png)
+![match](https://user-images.githubusercontent.com/10656909/222942962-73635777-2d89-4cad-aae7-41b3d4bbe25b.png)
+![profile](https://user-images.githubusercontent.com/10656909/222942965-4bf6c1e5-a7ec-4f5f-ac0d-3d55cc06b60d.png)
 </details>
 <br>
 
