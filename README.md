@@ -3,7 +3,7 @@
 <img align='center' src='https://user-images.githubusercontent.com/10656909/222941835-a6be6252-c3bb-47ce-b49d-63a50e305395.svg' width='100%'>
 
 <h3 align='center'>The backend for <a href='https://github.com/thinktapper/DinderRN'>Dinder</a> 🫃</h3>
-<h4 align='center'>RESTful API server for the mobile app.</h4>
+<h4 align='center'>RESTful API Server</h4>
 <p align='center'>
 <a href='#screenshots'>Screenshots</a> •
 <a href='#how-its-made'>How It's Made</a> •
@@ -15,7 +15,7 @@
 
 **Live project:** <a href='https://dinder-is-served-init.onrender.com/health'>Dinder Is Served</a>
 
-## 📱 Screenshots
+## 🤳 Screenshots
 
 <details>
   <summary>Show Images</summary>
