@@ -15,7 +15,7 @@
 
 **Live project:** <a href='https://dinder-is-served-init.onrender.com/health'>Dinder Is Served</a>
 
-## 🤳 Screenshots
+### Screenshots
 
 <details>
   <summary>Show Images</summary>
