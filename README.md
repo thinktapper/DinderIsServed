@@ -48,8 +48,6 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 
 <img src='./prisma/dbdiagram.jpg'>
 
-<br />
-
 ## 🏗️ Usage
 
 1. **Clone the repository**
