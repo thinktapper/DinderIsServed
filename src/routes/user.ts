@@ -72,10 +72,10 @@ user.get('/all', async (req, res) => {
       console.log('prisma ERROR: error in findmany query')
       return res.status(301).json({ success: false, error: 'Oops! DB error' })
     }
-    console.log('all users with images:', JSON.stringify(users))
+    // console.log('all users with images:', JSON.stringify(users))
 
     const usersData = users.filter((user) => user.id !== id)
-    console.log('filtered users:', JSON.stringify(usersData))
+    // console.log('filtered users:', JSON.stringify(usersData))
 
     if (!usersData) {
       return res.status(302).json({ success: false, error: 'Oops! my bad..' })
