@@ -106,7 +106,7 @@ See the [open issues](https://github.com/thinktapper/DinderIsServed/issues) for 
 
 ## 📝 Summary
 
-This project was a great way to learn more about the backend and how to create a Node + Express REST API server in TypeScript. I learned a lot about authentication & authorization by rolling my own middleware, and how to deploy a secure API.
+This project was a great way to learn more about the backend and how to create a Node + Express REST API server in TypeScript. I learned a lot about authentication & authorization by rolling my own auth middleware, and about how to deploy a secure API.
 
 ### Key takeaways:
 
@@ -115,7 +115,7 @@ This project was a great way to learn more about the backend and how to create a
   <li>Learned how to use JWTs to authenticate users and protect routes.</li>
   <li>Practiced creating middleware to protect voting integrity amongst users.</li>
   <li>Practiced using Prisma to generate relational database models and interact with the DB.</li>
-  <li>Learned out to create a seed script to populate the database with mock data.</li>
+  <li>Learned how to create a seed script to populate the database with mock data.</li>
   <li>Learned how to use the Google Maps API to fetch real-time restaurant data.</li>
   <li>Learned how to set up continuous deployment with CI.</li>
   <li>Gained experience debugging and troubleshooting TypeScript and ESLint build errors and deployment issues.</li>
