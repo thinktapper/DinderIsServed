@@ -31,7 +31,7 @@
 
 ## 🧑‍🔬 How It's Made
 
-Designed and built from scratch using the Node.js runtime & Express.js for handling routes and creating <a href='https://github.com/thinktapper/DinderRN'>Dinder's</a> API endpoints in TypeScript. Users are able to create accounts and log in, update profile information and create location-based feasts containing restaurants tailored to their occasion. Real-time establishment data is sourced from Google Maps and are stored alongside user votes in a PostgreSQL database. Prisma is used as a typesafe ORM to create schemas, query the DB, and handle migrations. I created authentication middleware to protect the API using JWTs. The server and hosted DB are deployed on [Render](https://render.com/).
+Designed and built from scratch using the Node.js runtime & Express.js for handling routes and creating <a href='https://github.com/thinktapper/DinderRN'>Dinder's</a> API endpoints. Users are able to create accounts and log in, update profile information and create location-based feasts containing restaurants tailored to their occasion. Real-time establishment data is sourced from Google Maps and are stored alongside user votes in a PostgreSQL database. Prisma is used as a typesafe ORM to create schemas, query the DB, and handle migrations. I created authentication middleware to protect the API using JWTs, and authorization middleware to prevent voter fraud. The web service and hosted DB are both deployed on [Render](https://render.com/).
 
 ### Built With:
 
