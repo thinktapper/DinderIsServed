@@ -1,45 +1,140 @@
-![Dinder Is Served](https://user-images.githubusercontent.com/10656909/222941835-a6be6252-c3bb-47ce-b49d-63a50e305395.svg)
-
+<!-- ![Dinder Is Served](https://user-images.githubusercontent.com/10656909/222941835-a6be6252-c3bb-47ce-b49d-63a50e305395.svg) -->
 <h1 align='center'> Dinder Is Served 🍽️</h1>
+<img align='center' src='https://user-images.githubusercontent.com/10656909/222941835-a6be6252-c3bb-47ce-b49d-63a50e305395.svg' width='100%'>
 
-Going out to eat with friends is a great way to catch up and enjoy each other's company. But it can be a hassle to find a place that everyone likes.
-This is the backend for **Dinder**: an app that helps you find a place that everyone agrees on.
+<h3 align='center'>The backend for <a href='https://github.com/thinktapper/DinderRN'>Dinder</a> 🫃</h3>
+<h4 align='center'>RESTful API server for the mobile app.</h4>
+<p align='center'>
+<a href='#screenshots'>Screenshots</a> •
+<a href='#how-its-made'>How It's Made</a> •
+<a href='#usage'>Usage</a> •
+<a href='#optimizations'>Optimizations</a> •
+<a href='#summary'>Summary</a> •
+<a href='#author'>Author</a>
+</p>
 
-<details name='screenshots'>
-<summary>Screenshots</summary>
-<img src='https://user-images.githubusercontent.com/10656909/222942913-bb4eef89-61e1-424b-b26d-7e4a1f5f2554.png' alt='' width='128'>
-<img src='https://user-images.githubusercontent.com/10656909/222942889-336a796b-3730-4530-bcdf-f55a920c057b.png' alt='' width='128'>
-<img src='https://user-images.githubusercontent.com/10656909/222942931-42860e6b-625a-4ebf-a432-b61f3d37ad01.png' alt='' width='128'>
-<img src='https://user-images.githubusercontent.com/10656909/222942957-b218210d-428b-4147-bbe6-70de11c16c10.png' alt='' width='128'>
-<img src='https://user-images.githubusercontent.com/10656909/222942962-73635777-2d89-4cad-aae7-41b3d4bbe25b.png' alt='' width='128'>
-<img src='https://user-images.githubusercontent.com/10656909/222942965-4bf6c1e5-a7ec-4f5f-ac0d-3d55cc06b60d.png' alt='' width='128'>
+**Live project:** <a href='https://dinder-is-served-init.onrender.com/health'>Dinder Is Served</a>
+
+## 📱 Screenshots
+
+<details>
+  <summary>Show Images</summary>
+    <img src='https://user-images.githubusercontent.com/10656909/222942913-bb4eef89-61e1-424b-b26d-7e4a1f5f2554.png' alt='' width='128'>
+    <img src='https://user-images.githubusercontent.com/10656909/222942889-336a796b-3730-4530-bcdf-f55a920c057b.png' alt='' width='128'>
+    <img src='https://user-images.githubusercontent.com/10656909/222942931-42860e6b-625a-4ebf-a432-b61f3d37ad01.png' alt='' width='128'>
+    <img src='https://user-images.githubusercontent.com/10656909/222942957-b218210d-428b-4147-bbe6-70de11c16c10.png' alt='' width='128'>
+    <img src='https://user-images.githubusercontent.com/10656909/222942962-73635777-2d89-4cad-aae7-41b3d4bbe25b.png' alt='' width='128'>
+    <img src='https://user-images.githubusercontent.com/10656909/222942965-4bf6c1e5-a7ec-4f5f-ac0d-3d55cc06b60d.png' alt='' width='128'>
 </details>
-<br>
+<!-- <br> -->
 
-**Link to project:** https://github.com/thinktapper/DinderRN
+## 🧑‍🔬 How It's Made
 
-## How It's Made:
+Designed and built from scratch using the Node.js runtime & Express.js for handling routes and creating <a href='https://github.com/thinktapper/DinderRN'>Dinder's</a> API endpoints in TypeScript. Users are able to create accounts and log in, update profile information and create location-based feasts containing restaurants tailored to their occasion. Real-time establishment data is sourced from Google Maps and are stored alongside user votes in a PostgreSQL database. Prisma is used as a typesafe ORM to create schemas, query the DB, and handle migrations. I created authentication middleware to protect the API using JWTs. The server and hosted DB are deployed on [Render](https://render.com/).
 
-**Tech used:** HTML, CSS, JavaScript, Framework of choice
+### 🛠️ Built With
 
-Here's where you can go to town on how you actually built this thing. Write as much as you can here, it's totally fine if it's not too much just make sure you write _something_. If you don't have too much experience on your resume working on the front end that's totally fine. This is where you can really show off your passion and make up for that ten fold.
+<!-- - [![JWT][jwt]][jwt-url] -->
 
-## Optimizations
+- [![Node][node]][node-url]
+- [![Prisma][prisma]][prisma-url]
+- [![Express][express]][express-url]
+- [![TypeScript][typescript]][typescript-url]
+- [![PostgreSQL][postgresql]][postgresql-url]
+- [![GoogleMaps][googlemaps]][googlemaps-url]
 
-_(optional)_
+## 🚀 Usage
 
-You don't have to include this section but interviewers _love_ that you can not only deliver a final product that looks great but also functions efficiently. Did you write something then refactor it later and the result was 5x faster than the original implementation? Did you cache your assets? Things that you write in this section are **GREAT** to bring up in interviews and you can use this section as reference when studying for technical interviews!
+1. **Clone the repository**
 
-## Lessons Learned:
+   Via HTTPS: `git clone https://github.com/thinktapper/DinderIsServed.git`
 
-No matter what your experience level, being an engineer means continuously learning. Every time you build something you always have those _whoa this is awesome_ or _fuck yeah I did it!_ moments. This is where you should share those moments! Recruiters and interviewers love to see that you're self-aware and passionate about growing.
+2. **Install the necessary packages**
 
-## Examples:
+   Go to the main directory and install the necessary packages
 
-Take a look at these couple examples that I have in my own portfolio:
+   ```sh
+   cd DinderIsServed/
+   npm i
+   ```
 
-**Palettable:** https://github.com/alecortega/palettable
+3. **Add credentials**
 
-**Twitter Battle:** https://github.com/alecortega/twitter-battle
+   A `.env` file will need to be added to the project root with the following variables:
 
-**Patch Panel:** https://github.com/alecortega/patch-panel
+   ```sh
+   DATABASE_URL="postgresql://<username>:<password>@localhost:5432/<database>?schema=public"
+   GOOGLE_API="<your-google-maps-api-key>"
+   ```
+
+4. **Create the database**
+
+   ```sh
+    npx prisma migrate dev --name init
+   ```
+
+5. **Run the server**
+
+   ```sh
+    npm run dev
+   ```
+
+   The server will be running on `localhost:3000`
+
+## 🏋️‍♂️ Optimizations
+
+With time, I plan to add the following features:
+
+- [ x ] Implement rate limiting to prevent brute force attacks
+- [ ] Resolve security vulnerabilities in dependencies
+- [ ] Add feature for users to create groups of friends/family members called **Herds**
+- [ ] Create sharable links for inviting other users (registered or not) to join Herds
+- [ ] Add a feature so users can add restaurants to their favorites
+- [ ] Add a feature so users can filter restaurants by various criteria
+  - [ ] Add options for that criteria in the feast creation form & persist in the database
+- [ ] Add more detailed documentation for the API endpoints.
+
+See the [open issues](https://github.com/thinktapper/DinderIsServed/issues) for a full list of proposed features (and known issues).
+
+## 📝 Summary
+
+This project was a great way to learn more about the backend and how to create a RESTful API. I learned a lot about authentication and authorization, and how to create a secure API. I also learned a lot about how to use Prisma as an ORM and how to use it to create schemas, query the database, and handle migrations. I also learned a lot about how to use TypeScript with Node.js and Express.js.
+
+## 👨‍💻 Author
+
+[![MadeByTapper][madeby-tapper]][madeby-tapper-url] [![LinkedIn][linkedin-shield]][linkedin-url]
+
+Andrew Tapper - [@thinktapper](https://twitter.com/thinktapper) - andrew@tapper.codes
+
+Client app: [https://github.com/thinktapper/DinderRN](https://github.com/thinktapper/DinderRN)
+
+Parent Project: [https://github.com/thinktapper/dinder](https://github.com/thinktapper/dinder)
+
+## License
+
+[![GNU License][license-shield]][license-url]
+
+Distributed under the GNU GPLv3. See `LICENSE` for more information.
+
+[license-shield]: https://img.shields.io/github/license/thinktapper/DinderRN?style=for-the-badge
+[license-url]: https://github.com/thinktapper/DinderRN/blob/main/LICENSE
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/thinktapper
+[googlemaps]: https://img.shields.io/badge/googlemaps-red?style=for-the-badge&logo=googlemaps&logoColor=white
+[googlemaps-url]: https://developers.google.com/maps
+[prisma]: https://img.shields.io/badge/prisma-35495E?style=for-the-badge&logo=prisma&logoColor=4FC08D
+[prisma-url]: https://prisma.io
+[postgresql]: https://img.shields.io/badge/postgresql-4169E1?style=for-the-badge&logo=postgresql&logoColor=white
+[postgresql-url]: https://postgresql.org/
+[node]: https://img.shields.io/badge/node-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
+[node-url]: https://nodejs.org/
+[express]: https://img.shields.io/badge/express-000000?style=for-the-badge&logo=express&logoColor=white
+[express-url]: https://expressjs.com/
+[jwt]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white
+[jwt-url]: https://jwt.io/
+[typescript]: https://img.shields.io/badge/typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
+[typescript-url]: https://www.typescriptlang.org/
+[madewith-love]: https://img.shields.io/badge/made%20with-%E2%9D%A4-red?style=for-the-badge
+[madewith-love-url]: https://tapper.codes
+[madeby-tapper]: https://img.shields.io/badge/made%20by-tapper-blue?style=for-the-badge
+[madeby-tapper-url]: https://tapper.codes
