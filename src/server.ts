@@ -39,13 +39,13 @@ app.use(
 app.use(express.json())
 
 // Logging
-// if (
-//   process.env.NODE_ENV === 'development' ||
-//   process.env.NODE_ENV === 'staging'
-// ) {
-//   app.use(morgan('dev'))
-// }
-app.use(morgan('dev'))
+if (
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV === 'staging'
+) {
+  app.use(morgan('dev'))
+}
+// app.use(morgan('dev'))
 
 // app.use(
 //   session({
