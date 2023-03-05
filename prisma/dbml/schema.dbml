@@ -1,0 +1,94 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "Dinder Is Served" {
+  database_type: 'PostgreSQL'
+  Note: 'REST API backend for Dinder'
+}
+
+Table User {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  email String [unique, not null]
+  username String [unique, not null]
+  image String
+  password String [not null]
+  sessionID String
+  organizedFeasts Feast [not null]
+  joinedFeasts Feast [not null]
+  votes Vote [not null]
+}
+
+Table Feast {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  image String
+  startDate DateTime [default: `now()`, not null]
+  endDate DateTime [not null]
+  closed Boolean [default: false]
+  location Json [not null]
+  radius Int [not null]
+  organizer User [not null]
+  organizerId String [not null]
+  guestList User [not null]
+  places Place [not null]
+  voteResults Vote [not null]
+  winner Place
+  winnerId String
+}
+
+Table Place {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  googleId String [not null]
+  name String [not null]
+  description String
+  price String
+  rating String
+  ratingsTotal String
+  stars String
+  photos String[] [not null]
+  feast Feast [not null]
+  feastId String [not null]
+  votes Vote [not null]
+  wonFeasts Feast [not null]
+}
+
+Table Vote {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  voteType VoteType [not null]
+  user User [not null]
+  userId String [not null]
+  place Place [not null]
+  placeId String [not null]
+  feast Feast [not null]
+  feastId String [not null]
+}
+
+Table guests {
+  joinedfeastsId String [ref: > Feast.id]
+  guestlistId String [ref: > User.id]
+}
+
+Enum VoteType {
+  YASS
+  NAH
+}
+
+Ref: Feast.organizerId > User.id
+
+Ref: Feast.winnerId - Place.id
+
+Ref: Place.feastId > Feast.id [delete: Cascade]
+
+Ref: Vote.userId > User.id [delete: Cascade]
+
+Ref: Vote.placeId > Place.id [delete: Cascade]
+
+Ref: Vote.feastId > Feast.id [delete: Cascade]
