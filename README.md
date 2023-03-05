@@ -93,7 +93,7 @@ Designed and built from scratch using the Node.js runtime & Express.js for handl
 With time, I plan to add the following features:
 
 - [x] Implement rate limiting to prevent brute force attacks
-- [ ] Resolve security vulnerabilities in dependencies
+- [x] Resolve security vulnerabilities in dependencies
 - [ ] Add feature for users to create groups of friends/family members called **Herds**
 - [ ] Create sharable links for inviting other users (registered or not) to join Herds
 - [ ] Add a feature so users can add restaurants to their favorites
@@ -127,7 +127,7 @@ This project was a great way to learn more about the backend and how to create a
 
 Andrew Tapper - [@thinktapper](https://twitter.com/thinktapper) - andrew@tapper.codes
 
-Client app: [https://github.com/thinktapper/DinderRN](https://github.com/thinktapper/DinderRN)
+Frontend | Client app: [https://github.com/thinktapper/DinderRN](https://github.com/thinktapper/DinderRN)
 
 Parent Project: [https://github.com/thinktapper/dinder](https://github.com/thinktapper/dinder)
 
