@@ -27,7 +27,7 @@
     <img src='https://user-images.githubusercontent.com/10656909/222942962-73635777-2d89-4cad-aae7-41b3d4bbe25b.png' alt='' width='128'>
     <img src='https://user-images.githubusercontent.com/10656909/222942965-4bf6c1e5-a7ec-4f5f-ac0d-3d55cc06b60d.png' alt='' width='128'>
 </details>
-<br />
+<!-- <br /> -->
 
 ## 🧑‍🔬 How It's Made
 
